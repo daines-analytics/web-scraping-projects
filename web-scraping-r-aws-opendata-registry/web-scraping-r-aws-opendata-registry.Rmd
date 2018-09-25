@@ -1,0 +1,75 @@
+---
+title: "Web Scraping of Registry of Open Data on AWS Using R"
+author: "David Lowe"
+date: "October 12, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to gather data about the open datasets on AWS. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: The Open Data registry exists to help people discover and share datasets that are available via AWS resources. This page lists all usage examples for datasets listed in the registry. [https://registry.opendata.aws/usage-examples]
+
+Starting URLs: https://registry.opendata.aws/
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+library(rvest)
+library(jsonlite)
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+url <- 'https://registry.opendata.aws/'
+
+# Creating an html document from the URL
+webpage <- read_html(url)
+```
+
+## Performing the Scraping and Processing
+
+```{r PROCESSING}
+dataset_records_css <- html_nodes(webpage, '.dataset')
+head(dataset_records_css)
+str(dataset_records_css)
+
+dataset_listing_df <- data.frame(name=character(0), url=character(0), description=character(0), tags=character(0))
+
+for (item in dataset_records_css) {
+
+  dataset_name_css <- html_nodes(item, 'h3 a')
+  dataset_name <- html_text(dataset_name_css)
+
+  detail_url_css <- html_attr(dataset_name_css, 'href')
+  detail_url <- paste(url, detail_url_css, sep = "")
+
+  dataset_description_css <- html_nodes(item, 'p')[2]
+  dataset_description <- html_text(dataset_description_css)
+
+  dataset_tags_css <- html_nodes(item, 'p span')
+  dataset_tags <- character(0)
+  for (tag in dataset_tags_css) {
+    dataset_tags <- c(dataset_tags, html_text(tag))
+  }
+  
+  dataset_tags <- paste(dataset_tags,collapse=", ")
+  each_record_df <- data.frame(dataset_name, detail_url, dataset_description, dataset_tags)
+  names(each_record_df) <- c("name", "url", "description", "tags")
+  
+  dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-aws-opendata-registry.json")
+cat(dataset_listing_json)
+```
