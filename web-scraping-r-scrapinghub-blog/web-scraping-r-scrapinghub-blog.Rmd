@@ -1,0 +1,90 @@
+---
+title: "Web Scraping of ScrapingHub Blog Using R"
+author: "David Lowe"
+date: "November 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: ScrapingHub, the maker of the Scrapy framework, hosts its blog at blog.scrapinghub.com. The purpose of this exercise is to practice web scraping using Scrapy by gathering the blog entries from Scrapinghub. The script also would automatically traverse from one page of the blog entries to the next page.
+
+Starting URLs: https://blog.scrapinghub.com/
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+library(rvest)
+library(jsonlite)
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+url <- 'https://blog.scrapinghub.com/'
+
+# Creating an html document from the URL
+webpage <- read_html(url)
+```
+
+## Performing the Scraping and Processing
+
+```{r PAGE OVERVIEW}
+dataset_records_css <- html_nodes(webpage, '.post-item')
+head(dataset_records_css)
+str(dataset_records_css)
+```
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(blog_title=character(0), blog_url=character(0), blog_date=character(0), blog_author=character(0), blog_summary=character(0))
+
+done <- FALSE
+
+while (!done) {
+  for (item in dataset_records_css) {
+  
+    blog_title_css <- html_nodes(item, 'h2 a')
+    blog_title <- html_text(blog_title_css, trim=T)
+  
+    blog_url <- html_attr(blog_title_css, 'href')
+  
+    blog_date_css <- html_nodes(item, 'span.date')
+    blog_date <- html_text(blog_date_css, trim=T)
+  
+    blog_author_css <- html_nodes(item, 'span.author')
+    blog_author <- html_text(blog_author_css, trim=T)
+  
+    blog_summary_css <- html_nodes(item, 'div.post-content')
+    blog_summary <- html_text(blog_summary_css, trim=T)
+  
+    each_record_df <- data.frame(blog_title, blog_url, blog_date, blog_author, blog_summary)
+  
+    dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+  }
+  
+  older_posts_css <- html_nodes(webpage, 'a.next-posts-link')
+  if (length(older_posts_css)!=0) {
+    next_page_url <- html_attr(older_posts_css, 'href')
+    webpage <- read_html(next_page_url)
+    dataset_records_css <- html_nodes(webpage, '.post-item')
+    done <- FALSE
+  } else {
+    done <- TRUE
+  }
+  
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of blog items processed:", nrow(dataset_listing_df))
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-scrapinghub-blog.json")
+cat(dataset_listing_json)
+```
