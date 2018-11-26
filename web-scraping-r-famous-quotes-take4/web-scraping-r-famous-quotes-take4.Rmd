@@ -1,0 +1,110 @@
+---
+title: "Web Scraping of Quotes from Famous People using R Take 4"
+author: "David Lowe"
+date: "December 2, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: A demo website, created by Scrapinghub, lists quotes from famous people. It has many endpoints showing the quotes in different ways, and each endpoint presents a different scraping challenge for practicing web scraping. For this Take4 iteration, the R script attempts to execute the login form and scrape the Goodreads links off each quote. The Goodreads links appear only after a successful authentication.
+
+Starting URLs: http://quotes.toscrape.com/login
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+library(rvest)
+library(jsonlite)
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT_URL}
+# Specifying the URL of desired web page to be scrapped
+login_url <- 'http://quotes.toscrape.com/login'
+desired_url <- 'http://quotes.toscrape.com/'
+```
+
+```{r LOGIN FORM}
+session <- html_session(login_url)
+form <- html_form(read_html(login_url))[[1]]
+
+csrf_token_val <- form[['fields']][['csrf_token']][['value']]
+login_user <- "abc"
+login_pass <- "abc"
+
+filled_form <- set_values(form, csrf_token = csrf_token_val, username = login_user, password = login_pass)
+login_results <- submit_form(session, filled_form)
+```
+
+```{r OUTPUT_URL}
+starting_url <- jump_to(session, desired_url)[['response']][['url']]
+
+# Creating an html document from the URL
+webpage <- read_html(starting_url)
+```
+
+## Performing the Scraping and Processing
+
+```{r PAGE OVERVIEW}
+dataset_records_css <- html_nodes(webpage, 'div.quote')
+head(dataset_records_css)
+str(dataset_records_css)
+```
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(author_name=character(0), quote_text=character(0), quote_tags=character(0), author_url=character(0))
+
+done <- FALSE
+
+while (!done) {
+  for (item in dataset_records_css) {
+  
+    author_name_css <- html_nodes(item, 'small.author')
+    author_name <- html_text(author_name_css, trim=T)
+  
+    quote_text_css <- html_nodes(item, 'span.text')
+    quote_text <- html_text(quote_text_css, trim=T)
+  
+    quote_tags_css <- html_nodes(item, 'div.tags a')
+    quote_tags <- character(0)
+    for (tag in quote_tags_css) {
+      quote_tags <- c(quote_tags, html_text(tag))
+    }
+    quote_tags <- paste(quote_tags, collapse=", ")
+
+    author_url_css <- html_nodes(item, 'span a')
+    author_url_href <- html_attr(author_url_css, 'href')
+    author_url <- paste(starting_url, author_url_href, sep = "")
+
+    each_record_df <- data.frame(author_name, quote_text, quote_tags, author_url)
+    dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+  }
+  
+  next_page_css <- html_nodes(webpage, 'li.next a')
+  if (length(next_page_css)!=0) {
+    next_page_url <- html_attr(next_page_css, 'href')
+    next_page_url <- paste(starting_url, next_page_url, sep="")
+    webpage <- read_html(next_page_url)
+    dataset_records_css <- html_nodes(webpage, 'div.quote')
+    done <- FALSE
+  } else {
+    done <- TRUE
+  }
+  
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of quote items processed:", nrow(dataset_listing_df))
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-famous-quotes-take4.json")
+cat(dataset_listing_json)
+```
