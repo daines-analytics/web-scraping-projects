@@ -1,0 +1,146 @@
+---
+title: "Web Scraping of NeurIPS Proceedings Using R"
+author: "David Lowe"
+date: "December 26, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping R code leverages the rvest package.
+
+INTRODUCTION: The Neural Information Processing Systems Conference (NeurIPS) hosts its collections of papers on the website, https://papers.nips.cc/. This web scraping script will automatically traverse through the listing and individual paper pages of the 2009 conference and collect all links to the PDF documents. The script will also download the PDF documents as part of the scraping process.
+
+Starting URLs: https://papers.nips.cc/book/advances-in-neural-information-processing-systems-29-2016
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(rvest)
+library(httr)
+library(jsonlite)
+library(stringr)
+library(mailR)
+```
+
+### Setting up the email notification function
+
+```{r}
+email_notify <- function(msg=""){
+  sender <- "luozhi2488@gmail.com"
+  receiver <- "dave@contactdavidlowe.com"
+  sbj_line <- "Notification from R Script"
+  password <- readLines("../email_credential.txt")
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = sender, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+```{r}
+email_notify(paste("The web scraping process has begun!",date()))
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+starting_url <- 'https://papers.nips.cc/book/advances-in-neural-information-processing-systems-29-2016'
+website_url <- 'https://papers.nips.cc'
+
+# Creating an html document from the URL
+uastring <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36"
+session <- html_session(starting_url, user_agent(uastring))
+webpage <- read_html(session)
+```
+
+## Performing the Scraping and Processing
+
+```{r PAGE OVERVIEW}
+dataset_records_css <- html_nodes(webpage, 'ul li')
+head(dataset_records_css)
+```
+
+```{r ITEM EXTRACTION}
+email_notify(paste("The item extraction process has begun!",date()))
+dataset_listing_df <- data.frame(title=character(0), authors=character(0), doc_link=character(0), abstract=character(0))
+
+# Delete the very first element which is not a paper listing
+dataset_records_css[[1]] <- NULL
+
+for (item in dataset_records_css) {
+  
+  title <- "[Not Found]"
+  authors <- "[Not Found]"
+  doc_link <- "[Not Found]"
+  abstract <- "[Not Found]"
+
+  entry_css <- html_nodes(item, 'a')
+  title <- html_text(entry_css[[1]], trim=T)
+  doc_link_css <- html_attr(entry_css[[1]], 'href')
+  doc_link <- paste0(website_url, doc_link_css)
+  
+  author_list <- c()
+  if (length(entry_css) > 1) {
+    for (i in 2:length(entry_css)) {
+      author_list <- c(author_list, html_text(entry_css[[i]], trim=T))
+    }
+    if (length(author_list) > 0) {
+      authors <- paste(author_list, collapse = ", ")
+    }
+  }
+
+  if (doc_link != "[Not Found]") {
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=3, max=8)
+    Sys.sleep(waitTime)
+    cat("Waited", waitTime, "seconds to retrieve the next URL\n")
+    docSession <- html_session(doc_link, user_agent(uastring))
+
+    docpage <- read_html(docSession)
+    artifact_list <- html_nodes(docpage, 'a')
+    for (i in 1:length(artifact_list)) {
+      label <- html_text(artifact_list[[i]], trim=T)
+      if (label == "[PDF]") {
+        doc_path <- html_attr(artifact_list[[i]], 'href')
+        pdf_link <- paste0(website_url, doc_path)
+        
+        # Slicing up the document path to get the final destination file name
+        doc_path_list <- str_split(doc_path, "/")
+        dest_file <- doc_path_list[[1]][length(doc_path_list[[1]])]
+        
+        # Download the document from the website
+        download.file(pdf_link, dest_file, mode = "wb")
+        cat("Document", pdf_link, "captured as", dest_file, "\n")
+      }
+    }
+    
+    abstract_css <- html_node(docpage, 'p.abstract')
+    abstract <- html_text(abstract_css)
+  }
+
+  each_record_df <- data.frame(title, authors, doc_link, abstract)
+  dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of blog items processed:", nrow(dataset_listing_df))
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-nips-proceedings.json")
+cat(dataset_listing_json)
+
+email_notify(paste("The web scraping process has completed!",date()))
+proc.time()-startTimeScript
+```
