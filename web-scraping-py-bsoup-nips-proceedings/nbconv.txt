@@ -1,0 +1,1 @@
+jupyter nbconvert --to html web-scraping-py-bsoup-nips-proceedings.ipynb
