@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
 
-INTRODUCTION: Daines Analytics hosts its blog at dainesanalytics.blog. The purpose of this exercise is to practice web scraping using Scrapy by gathering the blog entries from Daines Analytics' RSS feed. This iteration of the script automatically traverses the RSS feed to capture all blog entries.
+INTRODUCTION: Daines Analytics hosts its blog at dainesanalytics.blog. The purpose of this exercise is to practice web scraping by gathering the blog entries from Daines Analytics' RSS feed. This iteration of the script automatically traverses the RSS feed to capture all blog entries.
 
 Starting URLs: https://dainesanalytics.blog/feed or https://dainesanalytics.blog/feed/?paged=1
 
