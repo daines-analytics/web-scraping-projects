@@ -1,0 +1,120 @@
+---
+title: "Web Scraping of Machine Learning Blog Entries Using R Take 1"
+author: "David Lowe"
+date: "January 13, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: Dr. Jason Brownlee's Machine Learning Mastery hosts its tutorial lessons at https://machinelearningmastery.com/blog. The purpose of this exercise is to practice web scraping by gathering the blog entries from Machine Learning Mastery's RSS feed. This iteration of the script automatically traverses the web pages to capture all blog entries and store all captured information in a JSON output file.
+
+Starting URLs: https://machinelearningmastery.com/feed or https://machinelearningmastery.com/feed/?paged=1
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(httr)
+library(rvest)
+library(jsonlite)
+library(stringr)
+library(mailR)
+```
+
+### Setting up the email notification function
+
+```{r}
+email_notify <- function(msg=""){
+  sender <- "luozhi2488@gmail.com"
+  receiver <- "dave@contactdavidlowe.com"
+  sbj_line <- "Notification from R Script"
+  password <- readLines("../email_credential.txt")
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = sender, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+starting_url <- 'https://machinelearningmastery.com/feed/?paged='
+pageNum = 1
+```
+
+```{r}
+email_notify(paste("The web scraping process has begun!",date()))
+```
+
+## Performing the Scraping and Processing
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(title=character(0), author=character(0), post_date=character(0), link_url=character(0), description=character(0))
+
+done <- FALSE
+
+while (!done){
+  # Creating an xml document from the URL
+  api_url = paste0(starting_url,as.character(pageNum))
+  cat("Trying to access web page: ",api_url,"\n")
+
+  if (http_status(GET(api_url))$reason=="OK"){
+    cat("Currently accessing and parsing web page: ",api_url,"\n")
+    webpage <- read_xml(api_url)
+    dataset_records_css <- xml_nodes(webpage, 'item')
+    for (item in dataset_records_css) {
+    
+      title_css <- xml_node(item, xpath="//item/title")
+      title <- xml_text(title_css, trim=T)
+  
+      author_css <- xml_node(item, xpath="//item/dc:creator")
+      author <- xml_text(author_css, trim=T)
+    
+      post_date_css <- xml_node(item, xpath="//item/pubDate")
+      post_date <- xml_text(post_date_css, trim=T)
+    
+      link_url_css <- xml_node(item, xpath="//item/link")
+      link_url <- xml_text(link_url_css, trim=T)
+  
+      description_css <- xml_node(item, xpath="//item/description")
+      description <- xml_text(description_css, trim=T)
+  
+      each_record_df <- data.frame(title, author, post_date, link_url, description)
+      dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+    }
+    pageNum <- pageNum + 1
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=3, max=5)
+    Sys.sleep(waitTime)
+    cat("Waited", waitTime, "seconds before trying to retrieve the next URL\n")
+  }
+  else {
+    done = TRUE
+  }
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of blog items processed:", nrow(dataset_listing_df), "\n")
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-dainesanalytics-blog.json")
+cat(dataset_listing_json)
+```
+
+```{r}
+email_notify(paste("The web scraping process has completed!",date()))
+proc.time()-startTimeScript
+```
