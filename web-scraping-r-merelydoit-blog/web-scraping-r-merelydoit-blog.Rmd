@@ -1,0 +1,146 @@
+---
+title: "Web Scraping of Merely Do It Blog Entries Using R"
+author: "David Lowe"
+date: "January 20, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: David Lowe hosts his blog at merelydoit.blog. The purpose of this exercise is to practice web scraping by gathering the blog entries from Merely Do It's RSS feed. This iteration of the script automatically traverses the RSS feed to capture all blog entries.
+
+Starting URLs: https://merelydoit.blog/feed or https://merelydoit.blog/feed/?paged=1
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(httr)
+library(rvest)
+library(jsonlite)
+library(stringr)
+library(mailR)
+```
+
+### Setting up the email notification function
+
+```{r}
+email_notify <- function(msg=""){
+  sender <- "luozhi2488@gmail.com"
+  receiver <- "dave@contactdavidlowe.com"
+  sbj_line <- "Notification from R Web Scraping Script"
+  password <- readLines("../email_credential.txt")
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = sender, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+starting_url <- 'https://merelydoit.blog/feed/?paged='
+pageNum = 1
+
+# Setting up the User Agent String
+uastring <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36"
+```
+
+```{r}
+email_notify(paste("The web scraping process using R has begun!",date()))
+```
+
+## Performing the Scraping and Processing
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(title=character(0), author=character(0), post_date=character(0), link_url=character(0), blog_text=character(0))
+
+done <- FALSE
+
+while (!done){
+  # Creating an xml document from the URL
+  api_url <- paste0(starting_url,as.character(pageNum))
+  getSession <- GET(api_url, user_agent(uastring))
+
+  if (http_status(getSession)$reason=="OK"){
+    cat("Currently parsing web page:",api_url,"\n")
+    webpage <- read_xml(getSession)
+    dataset_records_css <- xml_nodes(webpage, 'item')
+    for (item in dataset_records_css) {
+    
+      title <- "[Not Found]"
+      author <- "[Not Found]"
+      post_date <- "[Not Found]"
+      link_url <- "[Not Found]"
+      blog_text <- "[Not Found]"
+      
+      title_css <- xml_node(item, xpath="//item/title")
+      title <- xml_text(title_css, trim=T)
+  
+      author_css <- xml_node(item, xpath="//item/dc:creator")
+      author <- xml_text(author_css, trim=T)
+    
+      post_date_css <- xml_node(item, xpath="//item/pubDate")
+      post_date <- xml_text(post_date_css, trim=T)
+    
+      link_url_css <- xml_node(item, xpath="//item/link")
+      link_url <- xml_text(link_url_css, trim=T)
+  
+      # Use this code block if the short summary in the RSS feed will do
+      # blog_text_css <- xml_node(item, xpath="//item/description")
+      # blog_text <- xml_text(blog_text_css, trim=T)
+      
+      # Use this code block if the complete blog text is required
+      if (link_url != "[Not Found]") {
+        # Adding random wait time so we do not hammer the website needlessly
+        waitTime <- runif(1, min=2, max=5)
+        Sys.sleep(waitTime)
+        cat("Waited", waitTime, "seconds before trying to retrieve the individual blog post page\n")
+        postSession <- html_session(link_url, user_agent(uastring))
+        postPage <- read_html(postSession)
+
+        blog_text_css <- html_node(postPage, 'div.entry-content')
+        blog_text <- html_text(blog_text_css, trim=T)
+      }
+  
+      each_record_df <- data.frame(title, author, post_date, link_url, blog_text)
+      dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+    }
+    if ((pageNum %% 5)==0){
+      email_notify(paste("Finished parsing web page:",api_url,"at",date()))
+    }
+    pageNum <- pageNum + 1
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=3, max=6)
+    Sys.sleep(waitTime)
+    cat("Waited", waitTime, "seconds before trying to retrieve the batch of RSS feed\n")
+  }
+  else {
+    done = TRUE
+  }
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of blog items processed:", nrow(dataset_listing_df), "\n")
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-merelydoit-blog.json")
+#cat(dataset_listing_json)
+```
+
+```{r}
+email_notify(paste("The web scraping process has completed!",date()))
+proc.time()-startTimeScript
+```
