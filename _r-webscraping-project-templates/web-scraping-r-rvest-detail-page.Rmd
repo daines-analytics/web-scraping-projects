@@ -1,0 +1,98 @@
+---
+title: "Web Scraping of Quotes from Famous People using R Take 2"
+author: "David Lowe"
+date: "November 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: A demo website, created by Scrapinghub, lists quotes from famous people. It has many endpoints showing the quotes in different ways, and each endpoint presents a different scraping challenge for practicing web scraping. For this Take2 iteration, the R script attempts to follow the links to the author page and scrape the author information.
+
+Starting URLs: http://quotes.toscrape.com/
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+library(rvest)
+library(jsonlite)
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+starting_url <- 'http://quotes.toscrape.com'
+
+# Creating an html document from the URL
+webpage <- read_html(starting_url)
+```
+
+## Performing the Scraping and Processing
+
+```{r PAGE OVERVIEW}
+dataset_records_css <- html_nodes(webpage, 'div.quote')
+head(dataset_records_css)
+str(dataset_records_css)
+```
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(author_name=character(0), author_birthday=character(0), author_birthloc=character(0), author_bio=character(0), author_url=character(0))
+
+done <- FALSE
+
+while (!done) {
+  for (item in dataset_records_css) {
+  
+    author_name_css <- html_nodes(item, 'small.author')
+    author_name <- html_text(author_name_css, trim=T)
+  
+    author_url_css <- html_nodes(item, 'span a')
+    author_url_href <- html_attr(author_url_css, 'href')
+    author_url <- paste(starting_url, author_url_href, sep = "")
+    
+    # Avoid duplicating author names
+    if (!(author_name %in% dataset_listing_df$author_name)){
+      author_page <- read_html(author_url)
+      
+      author_birthday_css <- html_node(author_page, 'span.author-born-date')
+      author_birthday <- html_text(author_birthday_css)
+      
+      author_birthloc_css <- html_node(author_page, 'span.author-born-location')
+      author_birthloc <- html_text(author_birthloc_css)
+      
+      author_bio_css <- html_node(author_page, 'div.author-description')
+      author_bio <- html_text(author_bio_css)
+  
+      each_record_df <- data.frame(author_name, author_birthday, author_birthloc, author_bio, author_url)
+      dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+    }
+    
+  }
+  
+  next_page_css <- html_nodes(webpage, 'li.next a')
+  if (length(next_page_css)!=0) {
+    next_page_url <- html_attr(next_page_css, 'href')
+    next_page_url <- paste(starting_url, next_page_url, sep="")
+    webpage <- read_html(next_page_url)
+    dataset_records_css <- html_nodes(webpage, 'div.quote')
+    done <- FALSE
+  } else {
+    done <- TRUE
+  }
+  
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of author items processed:", nrow(dataset_listing_df))
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-famous-quotes-take2.json")
+cat(dataset_listing_json)
+```

@@ -1,0 +1,84 @@
+---
+title: "Web Scraping of Quotes from Famous People using R Take 3"
+author: "David Lowe"
+date: "November 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: A demo website, created by Scrapinghub, lists quotes from famous people. It has many endpoints showing the quotes in different ways, and each endpoint presents a different scraping challenge for practicing web scraping. For this Take3 iteration, the R script attempts to scrape the quote information that is displayed via an infinite scrolling page.
+
+Starting URLs: http://quotes.toscrape.com/scroll
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+library(rvest)
+library(jsonlite)
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+site_url <- 'http://quotes.toscrape.com'
+api_url <- 'http://quotes.toscrape.com/api/quotes?page='
+page_num <- 1
+starting_url <- paste0(api_url, page_num)
+
+# Creating an html document from the URL
+webpage <- fromJSON(txt=starting_url)
+```
+
+## Performing the Scraping and Processing
+
+```{r PAGE OVERVIEW}
+dataset_records_css <- webpage[['quotes']]
+head(dataset_records_css)
+str(dataset_records_css)
+```
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(author_name=character(0), quote_text=character(0), quote_tags=character(0), author_url=character(0))
+
+done <- FALSE
+
+while (!done) {
+  for (i in 1:nrow(dataset_records_css)) {
+  
+    item <- dataset_records_css[i,]
+    author_name <- item[['author']]$name
+    quote_text <- item[['text']]
+    quote_tags <- paste(unlist(item[['tags']]), collapse = ", ")
+    author_url <- paste0(site_url, item[['author']]['goodreads_link'])
+    each_record_df <- data.frame(author_name, quote_text, quote_tags, author_url)
+    dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+  }
+  
+  next_page_exist <- webpage[['has_next']]
+  if (next_page_exist) {
+    page_num <- webpage[['page']] + 1
+    next_page_url <- paste0(api_url, page_num)
+    webpage <- fromJSON(txt=next_page_url)
+    dataset_records_css <- webpage[['quotes']]
+    done <- FALSE
+  } else {
+    done <- TRUE
+  }
+  
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of author items processed:", nrow(dataset_listing_df))
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-famous-quotes-take3.json")
+cat(dataset_listing_json)
+```
