@@ -13300,9 +13300,6 @@ div#notebook {
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;author_name&#39;</span><span class="p">,</span><span class="s1">&#39;quote_text&#39;</span><span class="p">,</span><span class="s1">&#39;quote_tags&#39;</span><span class="p">,</span><span class="s1">&#39;author_link&#39;</span><span class="p">])</span>
 <span class="n">pageNum</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="n">quote_listing</span> <span class="o">=</span> <span class="n">webpage</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;quote&quot;</span><span class="p">)</span>
-<span class="c1"># print(quote_listing)</span>
 </pre></div>
 
     </div>
@@ -13318,6 +13315,9 @@ div#notebook {
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span> <span class="p">:</span>
+    <span class="n">quote_listing</span> <span class="o">=</span> <span class="n">webpage</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;quote&quot;</span><span class="p">)</span>
+<span class="c1">#     print(quote_listing)</span>
+
     <span class="k">for</span> <span class="n">quote_item</span> <span class="ow">in</span> <span class="n">quote_listing</span> <span class="p">:</span>
         <span class="n">author_name</span> <span class="o">=</span> <span class="s2">&quot;[Not Found]&quot;</span>
         <span class="n">quote_text</span> <span class="o">=</span> <span class="s2">&quot;[Not Found]&quot;</span>
@@ -13338,13 +13338,11 @@ div#notebook {
 
     <span class="k">if</span> <span class="p">((</span><span class="n">pageNum</span> <span class="o">%</span> <span class="mi">5</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
         <span class="n">email_notify</span><span class="p">(</span><span class="s2">&quot;Finished parsing page: &quot;</span> <span class="o">+</span> <span class="n">next_page_url</span> <span class="o">+</span> <span class="s2">&quot; at &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%a %B </span><span class="si">%d</span><span class="s1">, %Y %I:%M:%S %p&#39;</span><span class="p">))</span>
-        
     <span class="n">pageNum</span> <span class="o">=</span> <span class="n">pageNum</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="n">next_page</span> <span class="o">=</span> <span class="n">webpage</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;next&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">next_page</span> <span class="o">!=</span> <span class="kc">None</span> <span class="p">:</span>
         <span class="n">next_page_url</span> <span class="o">=</span> <span class="n">website_url</span> <span class="o">+</span> <span class="n">next_page</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
-<span class="c1">#         print(next_page_url)</span>
 
         <span class="c1"># Adding random wait time so we do not hammer the website needlessly</span>
         <span class="n">waitTime</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
@@ -13386,23 +13384,23 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Waiting 5 seconds to process next page...
+<pre>Waiting 4 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/2/
-Waiting 3 seconds to process next page...
+Waiting 4 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/3/
-Waiting 3 seconds to process next page...
+Waiting 6 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/4/
-Waiting 6 seconds to process next page...
+Waiting 4 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/5/
-Waiting 6 seconds to process next page...
+Waiting 5 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/6/
-Waiting 4 seconds to process next page...
+Waiting 6 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/7/
-Waiting 6 seconds to process next page...
+Waiting 5 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/8/
-Waiting 4 seconds to process next page...
+Waiting 3 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/9/
-Waiting 6 seconds to process next page...
+Waiting 5 seconds to process next page...
 Successfully accessed the web page: http://quotes.toscrape.com/page/10/
 </pre>
 </div>
@@ -13445,7 +13443,7 @@ Successfully accessed the web page: http://quotes.toscrape.com/page/10/
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total time for the script: 0:01:05.134396
+<pre>Total time for the script: 0:00:53.726557
 </pre>
 </div>
 </div>
