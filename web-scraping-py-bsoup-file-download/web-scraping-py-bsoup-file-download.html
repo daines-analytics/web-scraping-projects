@@ -13117,7 +13117,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Web-Scraping-of-File-Download-Using-Python-and-BeautifulSoup">Web Scraping of File Download Using Python and BeautifulSoup<a class="anchor-link" href="#Web-Scraping-of-File-Download-Using-Python-and-BeautifulSoup">&#182;</a></h1><h3 id="David-Lowe">David Lowe<a class="anchor-link" href="#David-Lowe">&#182;</a></h3><h3 id="April-14,-2019">April 14, 2019<a class="anchor-link" href="#April-14,-2019">&#182;</a></h3><p>SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping python code leverages the BeautifulSoup module.</p>
-<p>INTRODUCTION: On occasions I have a need to download a batch of documents off a single web page without clicking on the download link one at a time. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF documents. The script will also download the PDF documents as part of the scraping process.</p>
+<p>INTRODUCTION: On occasions we have a need to download a batch of documents off a single web page without clicking on the download link one at a time. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF documents. The script will also download the PDF documents as part of the scraping process.</p>
 <p>Starting URLs: <a href="https://www.knime.com/about/events/knime-spring-summit-2019-berlin">https://www.knime.com/about/events/knime-spring-summit-2019-berlin</a></p>
 
 </div>
@@ -13135,9 +13135,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># import numpy as np</span>
-<span class="c1"># import pandas as pd</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">smtplib</span>
@@ -13173,7 +13171,7 @@ div#notebook {
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">email_notify</span><span class="p">(</span><span class="n">msg_text</span><span class="p">):</span>
     <span class="n">sender</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MAIL_USERNAME&#39;</span><span class="p">)</span>
     <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MAIL_PASSWORD&#39;</span><span class="p">)</span>
-    <span class="n">receiver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RECEIVER_MAIL&#39;</span><span class="p">)</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MAIL_RECEIVER&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sender</span><span class="o">==</span><span class="kc">None</span> <span class="ow">or</span> <span class="n">password</span><span class="o">==</span><span class="kc">None</span> <span class="ow">or</span> <span class="n">receiver</span><span class="o">==</span><span class="kc">None</span> <span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Incomplete email setup info. Script Processing Aborted!!!&quot;</span><span class="p">)</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="n">EmailMessage</span><span class="p">()</span>
@@ -13220,7 +13218,6 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Specifying the URL of desired web page to be scrapped</span>
 <span class="n">starting_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.knime.com/about/events/knime-spring-summit-2019-berlin&quot;</span>
-<span class="n">website_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.knime.com&quot;</span>
 
 <span class="c1"># Creating an html document from the URL</span>
 <span class="n">uastring</span> <span class="o">=</span> <span class="s2">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36&quot;</span>
@@ -13299,6 +13296,7 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Gather all links to the document</span>
 <span class="n">collection</span> <span class="o">=</span> <span class="n">webpage</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 
 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;[PDF]&quot;</span><span class="p">:</span>
@@ -13306,6 +13304,7 @@ div#notebook {
         <span class="n">waitTime</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Waiting &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">waitTime</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; seconds to retrieve the next document.&quot;</span><span class="p">)</span>
         <span class="n">sleep</span><span class="p">(</span><span class="n">waitTime</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">doc_path</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span>
         <span class="n">dest_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">doc_path</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Downlading document: &#39;</span> <span class="o">+</span> <span class="n">doc_path</span> <span class="o">+</span> <span class="s2">&quot; as &quot;</span> <span class="o">+</span> <span class="n">dest_file</span><span class="p">)</span>
@@ -13327,67 +13326,67 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Waiting 5 seconds to retrieve the next document.
+<pre>Waiting 7 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/01_opening_mb_final.pdf as 01_opening_mb_final.pdf
-Waiting 3 seconds to retrieve the next document.
+Waiting 6 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/02_software-edu-partner-community_tg_final.pdf as 02_software-edu-partner-community_tg_final.pdf
 Waiting 6 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/20190320_Knime_WienEnergie.pdf as 20190320_Knime_WienEnergie.pdf
-Waiting 4 seconds to retrieve the next document.
+Waiting 8 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/20190320_knime_summit_tobiphilippskatja_matthias_final_novideo.pdf as 20190320_knime_summit_tobiphilippskatja_matthias_final_novideo.pdf
-Waiting 7 seconds to retrieve the next document.
+Waiting 3 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/02a_01_rewe_feature_generation_at_knime_spring_summit_2019_canbepublished.pdf as 02a_01_rewe_feature_generation_at_knime_spring_summit_2019_canbepublished.pdf
-Waiting 4 seconds to retrieve the next document.
+Waiting 5 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/02a_02_hesso_industrialization_of_rice_grain_recognition_canbepublished.pdf as 02a_02_hesso_industrialization_of_rice_grain_recognition_canbepublished.pdf
-Waiting 3 seconds to retrieve the next document.
+Waiting 7 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/02a_03_arcelik_knime_summit_20032019_v4_canbepublished.pdf as 02a_03_arcelik_knime_summit_20032019_v4_canbepublished.pdf
-Waiting 8 seconds to retrieve the next document.
+Waiting 5 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/01_scott_morrison_brendan_doherty_seagate_technology_knime_conference_berlin_march_2019_final_for_pdf.pdf as 01_scott_morrison_brendan_doherty_seagate_technology_knime_conference_berlin_march_2019_final_for_pdf.pdf
-Waiting 8 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/01_gl_whatsnewindeployment.pdf as 01_gl_whatsnewindeployment.pdf
 Waiting 7 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/01_gl_whatsnewindeployment.pdf as 01_gl_whatsnewindeployment.pdf
 Waiting 7 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/01_gl_whatsnewindeployment.pdf as 01_gl_whatsnewindeployment.pdf
+Waiting 5 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/02_20190208_predictive_modelling_disability.pdf as 02_20190208_predictive_modelling_disability.pdf
-Waiting 5 seconds to retrieve the next document.
+Waiting 4 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/190320_knime_summit_published.pdf as 190320_knime_summit_published.pdf
-Waiting 6 seconds to retrieve the next document.
+Waiting 4 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/the_knime_show_final.pdf as the_knime_show_final.pdf
-Waiting 5 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/kimble_aswin_verhoeven_190321.pdf as kimble_aswin_verhoeven_190321.pdf
-Waiting 7 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/03_bfr_20190321_knime-summit_mf_e.pdf as 03_bfr_20190321_knime-summit_mf_e.pdf
-Waiting 3 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/201903_knime_summit_lbbw_bilanzanalyse_final.pdf as 201903_knime_summit_lbbw_bilanzanalyse_final.pdf
-Waiting 3 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/01_jf_knime_server_in_action_-_jf_final.pdf as 01_jf_knime_server_in_action_-_jf_final.pdf
-Waiting 6 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/02_telekom_final.pdf as 02_telekom_final.pdf
-Waiting 5 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/04_pape_tui_infotec_knime_summit_spring_2019_final.pdf as 04_pape_tui_infotec_knime_summit_spring_2019_final.pdf
-Waiting 5 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/01_pw_ia_scalability_final.pdf as 01_pw_ia_scalability_final.pdf
-Waiting 4 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/02_philoverview_final_compressed.pdf as 02_philoverview_final_compressed.pdf
-Waiting 7 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/data_prep_v7_knime_summit_b-2019_dean.pdf as data_prep_v7_knime_summit_b-2019_dean.pdf
-Waiting 3 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/openms_seqan_knimesummit_03_19.pdf as openms_seqan_knimesummit_03_19.pdf
-Waiting 5 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/20190322_aaa_iiot_workshop_1.pdf as 20190322_aaa_iiot_workshop_1.pdf
-Waiting 4 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/dl_workshop_19.pdf as dl_workshop_19.pdf
-Waiting 5 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/server_summit_workshop_publish.pdf as server_summit_workshop_publish.pdf
 Waiting 8 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/20190322_knime_image_processing_workshop.pdf as 20190322_knime_image_processing_workshop.pdf
-Waiting 4 seconds to retrieve the next document.
-Downlading document: https://files.knime.com/sites/default/files/01_intro.pdf as 01_intro.pdf
+Downlading document: https://files.knime.com/sites/default/files/kimble_aswin_verhoeven_190321.pdf as kimble_aswin_verhoeven_190321.pdf
+Waiting 8 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/03_bfr_20190321_knime-summit_mf_e.pdf as 03_bfr_20190321_knime-summit_mf_e.pdf
 Waiting 5 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/201903_knime_summit_lbbw_bilanzanalyse_final.pdf as 201903_knime_summit_lbbw_bilanzanalyse_final.pdf
+Waiting 8 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/01_jf_knime_server_in_action_-_jf_final.pdf as 01_jf_knime_server_in_action_-_jf_final.pdf
+Waiting 3 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/02_telekom_final.pdf as 02_telekom_final.pdf
+Waiting 4 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/04_pape_tui_infotec_knime_summit_spring_2019_final.pdf as 04_pape_tui_infotec_knime_summit_spring_2019_final.pdf
+Waiting 6 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/01_pw_ia_scalability_final.pdf as 01_pw_ia_scalability_final.pdf
+Waiting 5 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/02_philoverview_final_compressed.pdf as 02_philoverview_final_compressed.pdf
+Waiting 8 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/data_prep_v7_knime_summit_b-2019_dean.pdf as data_prep_v7_knime_summit_b-2019_dean.pdf
+Waiting 5 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/openms_seqan_knimesummit_03_19.pdf as openms_seqan_knimesummit_03_19.pdf
+Waiting 6 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/20190322_aaa_iiot_workshop_1.pdf as 20190322_aaa_iiot_workshop_1.pdf
+Waiting 3 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/dl_workshop_19.pdf as dl_workshop_19.pdf
+Waiting 6 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/server_summit_workshop_publish.pdf as server_summit_workshop_publish.pdf
+Waiting 3 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/20190322_knime_image_processing_workshop.pdf as 20190322_knime_image_processing_workshop.pdf
+Waiting 5 seconds to retrieve the next document.
+Downlading document: https://files.knime.com/sites/default/files/01_intro.pdf as 01_intro.pdf
+Waiting 3 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/matched_molecular_pairs_analysis.pdf as matched_molecular_pairs_analysis.pdf
 Waiting 3 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/guided_analytics_learnathon.pdf as guided_analytics_learnathon.pdf
-Waiting 8 seconds to retrieve the next document.
+Waiting 7 seconds to retrieve the next document.
 Downlading document: https://files.knime.com/sites/default/files/bigdataworkshop.pdf as bigdataworkshop.pdf
 </pre>
 </div>
@@ -13402,10 +13401,29 @@ Downlading document: https://files.knime.com/sites/default/files/bigdataworkshop
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">email_notify</span><span class="p">(</span><span class="s2">&quot;The web scraping process has completed! &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%a</span><span class="s1"> %B </span><span class="si">%d</span><span class="s1">, %Y %I:%M:%S %p&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of documents processed:&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+<span class="n">email_notify</span><span class="p">(</span><span class="s2">&quot;The web scraping process has completed! &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%a</span><span class="s1"> %B </span><span class="si">%d</span><span class="s1">, %Y %I:%M:%S %p&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Number of documents processed: 31
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -13432,7 +13450,7 @@ Downlading document: https://files.knime.com/sites/default/files/bigdataworkshop
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total time for the script: 0:04:02.337139
+<pre>Total time for the script: 0:02:56.104159
 </pre>
 </div>
 </div>
