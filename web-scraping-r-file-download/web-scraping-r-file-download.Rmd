@@ -1,0 +1,98 @@
+---
+title: "Web Scraping of File Download Using R"
+author: "David Lowe"
+date: "April 14, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping R code leverages the rvest package.
+
+NTRODUCTION: On occasions we have a need to download a batch of documents off a single web page without clicking on the download link one at a time. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF documents. The script will also download the PDF documents as part of the scraping process.
+
+Starting URLs: https://www.knime.com/about/events/knime-spring-summit-2019-berlin
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(rvest)
+library(httr)
+library(jsonlite)
+library(stringr)
+library(mailR)
+```
+
+### Setting up the email notification function
+
+```{r}
+email_notify <- function(msg=""){
+  sender <- Sys.getenv("MAIL_USERNAME")
+  password <- Sys.getenv("MAIL_PASSWORD")
+  receiver <- Sys.getenv("MAIL_RECEIVER")
+  sbj_line <- "Notification from R Web Scraping Script"
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = sender, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+```{r}
+email_notify(paste("The web scraping process has begun!",date()))
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+starting_url <- 'https://www.knime.com/about/events/knime-spring-summit-2019-berlin'
+
+# Creating an html document from the URL
+uastring <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36"
+session <- html_session(starting_url, user_agent(uastring))
+webpage <- read_html(session)
+```
+
+## Performing the Scraping and Processing
+
+```{r ITEM EXTRACTION}
+email_notify(paste("The item extraction process has begun!",date()))
+i <- 0
+collection <- html_nodes(webpage, 'a')
+
+for (item in collection) {
+  label <- html_text(item, trim=T)
+  if (label == "[PDF]") {
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=3, max=8)
+    Sys.sleep(waitTime)
+    cat("Waiting", waitTime, "seconds to retrieve the next document.\n")
+    i <- i + 1
+    doc_path <- html_attr(item, 'href')
+
+    # Slicing up the document path to get the final destination file name
+    doc_path_list <- str_split(doc_path, "/")
+    dest_file <- doc_path_list[[1]][length(doc_path_list[[1]])]
+
+    # Download the document from the website
+    download.file(doc_path, dest_file, mode = "wb")
+    cat("Document", doc_path, "captured as", dest_file, "\n")
+  }
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of documents processed:", i)
+email_notify(paste("The web scraping process has completed!",date()))
+proc.time()-startTimeScript
+```
