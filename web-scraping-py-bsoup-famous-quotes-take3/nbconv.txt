@@ -1,0 +1,1 @@
+jupyter nbconvert --to html web-scraping-py-bsoup-famous-quotes-take3.ipynb
