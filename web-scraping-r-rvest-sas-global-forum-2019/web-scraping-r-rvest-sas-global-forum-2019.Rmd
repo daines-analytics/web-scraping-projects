@@ -1,0 +1,110 @@
+---
+title: "Web Scraping of SAS Global Forum 2019 Proceedings Using R"
+author: "David Lowe"
+date: "June 9, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping R code leverages the rvest package.
+
+NTRODUCTION: On occasions we have a need to download a batch of documents off a single web page without clicking on the download links one at a time. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF documents. The script will also download the PDF documents as part of the scraping process.
+
+Starting URLs: https://www.sas.com/en_us/events/sas-global-forum/program/proceedings.html
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(rvest)
+library(httr)
+library(jsonlite)
+library(stringr)
+library(mailR)
+```
+
+### Setting up the email notification function
+
+```{r}
+email_notify <- function(msg=""){
+  sender <- Sys.getenv("MAIL_SENDER")
+  receiver <- Sys.getenv("MAIL_RECEIVER")
+  gateway <- Sys.getenv("SMTP_GATEWAY")
+  smtpuser <- Sys.getenv("SMTP_USERNAME")
+  password <- Sys.getenv("SMTP_PASSWORD")
+  sbj_line <- "Notification from R Binary Classification Script"
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = gateway, port = 587, user.name = smtpuser, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+```{r}
+email_notify(paste("The web scraping process has begun!",date()))
+```
+
+## Setting up the necessary parameters
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+startingURL <- "https://www.sas.com/en_us/events/sas-global-forum/program/proceedings.html"
+homeURL <- "https://www.sas.com"
+
+# Creating an html document from the URL
+uastring <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0"
+session <- html_session(startingURL, user_agent(uastring))
+webPage <- read_html(session)
+```
+
+## Performing the Scraping and Processing
+
+```{r}
+email_notify(paste("The item extraction process has begun!",date()))
+```
+
+```{r ITEM EXTRACTION}
+outerSection <- html_node(webPage, 'section#tabcontent_all-papers')
+asyncList <- html_node(outerSection, '.async-list')
+dataURL <- paste(homeURL, html_attr(asyncList, 'data-url'), sep="")
+
+session <- html_session(dataURL, user_agent(uastring))
+webPage <- read_html(session)
+collection <- html_nodes(webPage, 'a')
+i <- 0
+
+for (item in collection) {
+  docPath <- html_attr(item, 'href')
+  if (endsWith(docPath, ".pdf")) {
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=3, max=8)
+    Sys.sleep(waitTime)
+    cat("Waiting", waitTime, "seconds to retrieve the next document.\n")
+    i <- i + 1
+    print(docPath)
+
+    # Slicing up the document path to get the final destination file name
+    doc_path_list <- str_split(docPath, "/")
+    destFile <- doc_path_list[[1]][length(doc_path_list[[1]])]
+
+    # Download the document from the website
+    download.file(docPath, destFile, mode = "wb")
+    cat("Document", docPath, "captured as", destFile, "\n")
+  }
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of documents processed:", i)
+email_notify(paste("The web scraping process has completed!",date()))
+proc.time()-startTimeScript
+```
