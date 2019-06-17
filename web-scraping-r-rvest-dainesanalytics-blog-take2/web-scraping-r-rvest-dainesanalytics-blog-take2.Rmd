@@ -1,0 +1,197 @@
+---
+title: "Web Scraping of Daines Analytics Blog Entries Using R Take 2"
+author: "David Lowe"
+date: "June 23, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by gathering specific pieces of information from a website. The web scraping code was written in R and leveraged the rvest package.
+
+INTRODUCTION: Daines Analytics hosts its blog at dainesanalytics.blog. The purpose of this exercise is to practice web scraping by gathering the blog entries from Daines Analytics’ RSS feed. The script automatically traverses the RSS feed to capture all blog entries in a JSON document.
+
+For this second iteration, the script also will store the captured information in a remote relational database.
+
+Starting URLs: https://dainesanalytics.blog/feed or https://dainesanalytics.blog/feed/?paged=1
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(httr)
+library(rvest)
+library(jsonlite)
+library(stringr)
+library(mailR)
+library(odbc)
+library(RMariaDB)
+```
+
+### Setting up the email notification function
+
+```{r}
+email_notify <- function(msg=""){
+  sender <- Sys.getenv("MAIL_SENDER")
+  receiver <- Sys.getenv("MAIL_RECEIVER")
+  gateway <- Sys.getenv("SMTP_GATEWAY")
+  smtpuser <- Sys.getenv("SMTP_USERNAME")
+  password <- Sys.getenv("SMTP_PASSWORD")
+  sbj_line <- "Notification from R Binary Classification Script"
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = gateway, port = 587, user.name = smtpuser, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+## Setting up the necessary parameters
+
+```{r}
+# Set up the verbose flag to print detailed messages for debugging (only TRUE will activate!)
+verbose <- FALSE
+
+# Set up the muteEmail flag to stop sending progress emails (only TRUE will supress the emails!)
+muteEmail <- FALSE
+```
+
+```{r}
+if (!muteEmail) email_notify(paste("The web scraping process using R has begun!",date()))
+```
+
+```{r DB_SETUP}
+# Set up the database connection strings and environment
+db_host <- Sys.getenv("DB_HOST")
+db_user <- Sys.getenv("DB_USER")
+db_pass <- Sys.getenv("DB_PASS")
+db_name <- Sys.getenv("DB_NAME")
+
+# Connect to the database
+conn <- dbConnect(RMariaDB::MariaDB(),
+                  username = db_user,
+                  password = db_pass,
+                  host = db_host,
+                  port = 3306,
+                  dbname = db_name)
+
+# Define the function for storing the scraped records
+store <- function(blog_title, author_name, blog_date, blog_url, blog_text){
+  dbBegin(conn)
+  insertOps <- dbSendStatement(conn, "INSERT INTO rvest_dainesanalytics_blog_take2 (blog_title, author_name, blog_date, blog_url, blog_text) VALUES (?, ?, ?, ?, ?)")
+  dbBind(insertOps, list(blog_title, author_name, blog_date, blog_url, blog_text))
+  cat(dbGetRowsAffected(insertOps), "row inserted into the database.\n")
+  dbCommit(conn)
+  dbClearResult(insertOps)
+}
+```
+
+```{r INPUT}
+# Specifying the URL of desired web page to be scrapped
+starting_url <- 'https://dainesanalytics.blog/feed/?paged='
+pageNum <- 1
+
+# Setting up the User Agent String
+uastring <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0"
+```
+
+## Performing the Scraping and Processing
+
+```{r ITEM EXTRACTION}
+dataset_listing_df <- data.frame(blog_title=character(0), author_name=character(0), blog_date=character(0), blog_url=character(0), blog_text=character(0))
+
+done <- FALSE
+i <- 0
+
+while (!done){
+  # Creating an xml document from the URL
+  api_url <- paste0(starting_url,as.character(pageNum))
+  getSession <- GET(api_url, user_agent(uastring))
+
+  if (http_status(getSession)$reason=="OK"){
+    cat("Currently parsing web page:",api_url,"\n")
+    webPage <- read_xml(getSession)
+    dataset_records_css <- xml_nodes(webPage, xpath="//item")
+    if (verbose) print(dataset_records_css)
+    
+    for (item in dataset_records_css) {
+
+      blog_title <- "[Title Not Found]"
+      author_name <- "[Author Not Found]"
+      blog_date <- NULL
+      blog_url <- "[URL Not Found]"
+      blog_text <- "[Text Not Found]"
+
+      blog_title_css <- xml_node(item, "title")
+      blog_title <- xml_text(blog_title_css, trim=T)
+
+      author_name_css <- xml_node(item, xpath="dc:creator")
+      author_name <- xml_text(author_name_css, trim=T)
+
+      blog_date_css <- xml_node(item, xpath="pubDate")
+      blog_date_text <- xml_text(blog_date_css, trim=T)
+      blog_date <- as.POSIXct(blog_date_text, format="%a, %d %b %Y %H:%M:%S %z")
+
+      blog_url_css <- xml_node(item, xpath="link")
+      blog_url <- xml_text(blog_url_css, trim=T)
+
+      # Use this code block if the short summary in the RSS feed will do
+      # blog_text_css <- xml_node(item, xpath="//description")
+      # blog_text <- xml_text(blog_text_css, trim=T)
+
+      # Use this code block if the complete blog text is required
+      if (blog_url != "[URL Not Found]") {
+        # Adding random wait time so we do not hammer the website needlessly
+        waitTime <- runif(1, min=2, max=5)
+        cat("Waiting", waitTime, "seconds before trying to retrieve", blog_url, "\n")
+        Sys.sleep(waitTime)
+        postSession <- html_session(blog_url, user_agent(uastring))
+        postPage <- read_html(postSession)
+
+        blog_text_css <- html_node(postPage, 'div.entry-content')
+        blog_text <- gsub("[\r\n]", "<br>", html_text(blog_text_css, trim=T))
+      }
+
+      # Populate data frame for JSON document and store the same records into a RDBMS
+      if (verbose) cat("Processing blog entry:", blog_title, author_name, blog_date, blog_url)
+      each_record_df <- data.frame(blog_title, author_name, blog_date_text, blog_url, blog_text)
+      dataset_listing_df <- rbind(dataset_listing_df, each_record_df)
+      store(blog_title, author_name, blog_date, blog_url, blog_text)
+      i <- i + 1
+    }
+    
+    if ((pageNum %% 5)==0){
+      if (!muteEmail) email_notify(paste("Finished parsing web page:",api_url,"at",date()))
+    }
+    
+    pageNum <- pageNum + 1
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=2, max=5)
+    cat("Waiting", waitTime, "seconds before trying to retrieve the batch of RSS feed\n")
+    Sys.sleep(waitTime)
+  }
+  else {
+    done = TRUE
+    dbDisconnect(conn)
+  }
+}
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of blog items processed:", i, "\n")
+dataset_listing_json <- toJSON(dataset_listing_df)
+write_json(dataset_listing_df, "web-scraping-r-rvest-dainesanalytics-blog-take2.json")
+#cat(dataset_listing_json)
+```
+
+```{r}
+if (!muteEmail) email_notify(paste("The web scraping process has completed!",date()))
+proc.time()-startTimeScript
+```
