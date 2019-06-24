@@ -13117,7 +13117,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Web-Scraping-of-O'Reilly-Software-Architecture-Conference-New-York-2019">Web Scraping of O'Reilly Software Architecture Conference New York 2019<a class="anchor-link" href="#Web-Scraping-of-O'Reilly-Software-Architecture-Conference-New-York-2019">&#182;</a></h1><h3 id="David-Lowe">David Lowe<a class="anchor-link" href="#David-Lowe">&#182;</a></h3><h3 id="June-30,-2019">June 30, 2019<a class="anchor-link" href="#June-30,-2019">&#182;</a></h3><p>SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping python code leverages the BeautifulSoup module.</p>
-<p>INTRODUCTION: On occasions we have a need to download a batch of documents off a single web page without clicking on the download link one at a time. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF and PPTX documents. The script will also download the PDF and PPTX documents as part of the scraping process.</p>
+<p>INTRODUCTION: On occasions we have a need to download a batch of documents off a single web page without clicking on the download link one at a time. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF documents. The script will also download the PDF documents as part of the scraping process.</p>
 <p>Starting URLs: <a href="https://conferences.oreilly.com/software-architecture/sa-ny-2019/public/schedule/proceedings">https://conferences.oreilly.com/software-architecture/sa-ny-2019/public/schedule/proceedings</a></p>
 
 </div>
@@ -13155,30 +13155,71 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Ign:1 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64  InRelease
+<pre>Get:1 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]
 Hit:2 http://ppa.launchpad.net/graphics-drivers/ppa/ubuntu bionic InRelease
 Hit:3 http://archive.ubuntu.com/ubuntu bionic InRelease
-Ign:4 https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  InRelease
-Hit:5 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64  Release
-Hit:6 https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  Release
-Get:7 http://archive.ubuntu.com/ubuntu bionic-updates InRelease [88.7 kB]
-Get:8 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]
-Get:9 http://archive.ubuntu.com/ubuntu bionic-backports InRelease [74.6 kB]
+Get:4 http://archive.ubuntu.com/ubuntu bionic-updates InRelease [88.7 kB]
+Ign:5 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64  InRelease
+Get:6 http://ppa.launchpad.net/marutter/c2d4u3.5/ubuntu bionic InRelease [15.4 kB]
+Ign:7 https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  InRelease
+Hit:8 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64  Release
+Hit:9 https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  Release
 Get:10 https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/ InRelease [3,626 B]
-Get:13 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 Packages [1,225 kB]
-Hit:14 http://ppa.launchpad.net/marutter/c2d4u3.5/ubuntu bionic InRelease
-Get:15 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages [861 kB]
+Get:11 http://archive.ubuntu.com/ubuntu bionic-backports InRelease [74.6 kB]
+Get:13 http://ppa.launchpad.net/marutter/c2d4u3.5/ubuntu bionic/main Sources [1,647 kB]
+Get:15 http://security.ubuntu.com/ubuntu bionic-security/main amd64 Packages [553 kB]
 Get:16 http://security.ubuntu.com/ubuntu bionic-security/universe amd64 Packages [719 kB]
-Fetched 3,061 kB in 3s (1,048 kB/s)
+Get:17 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 Packages [1,226 kB]
+Get:18 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages [861 kB]
+Get:19 http://ppa.launchpad.net/marutter/c2d4u3.5/ubuntu bionic/main amd64 Packages [791 kB]
+Get:20 http://archive.ubuntu.com/ubuntu bionic-backports/universe amd64 Packages [3,927 B]
+Fetched 6,072 kB in 3s (1,872 kB/s)
 Reading package lists... Done
 Reading package lists... Done
 Building dependency tree       
 Reading state information... Done
-chromium-chromedriver is already the newest version (75.0.3770.90-0ubuntu0.18.04.1).
 The following package was automatically installed and is no longer required:
   libnvidia-common-410
 Use &#39;apt autoremove&#39; to remove it.
-0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+The following additional packages will be installed:
+  chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg-extra
+Suggested packages:
+  webaccounts-chromium-extension unity-chromium-extension adobe-flashplugin
+The following NEW packages will be installed:
+  chromium-browser chromium-browser-l10n chromium-chromedriver
+  chromium-codecs-ffmpeg-extra
+0 upgraded, 4 newly installed, 0 to remove and 31 not upgraded.
+Need to get 70.1 MB of archives.
+After this operation, 257 MB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 chromium-codecs-ffmpeg-extra amd64 75.0.3770.90-0ubuntu0.18.04.1 [1,112 kB]
+Get:2 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 chromium-browser amd64 75.0.3770.90-0ubuntu0.18.04.1 [61.6 MB]
+Get:3 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 chromium-browser-l10n all 75.0.3770.90-0ubuntu0.18.04.1 [2,953 kB]
+Get:4 http://archive.ubuntu.com/ubuntu bionic-updates/universe amd64 chromium-chromedriver amd64 75.0.3770.90-0ubuntu0.18.04.1 [4,482 kB]
+Fetched 70.1 MB in 3s (23.8 MB/s)
+Selecting previously unselected package chromium-codecs-ffmpeg-extra.
+(Reading database ... 130942 files and directories currently installed.)
+Preparing to unpack .../chromium-codecs-ffmpeg-extra_75.0.3770.90-0ubuntu0.18.04.1_amd64.deb ...
+Unpacking chromium-codecs-ffmpeg-extra (75.0.3770.90-0ubuntu0.18.04.1) ...
+Selecting previously unselected package chromium-browser.
+Preparing to unpack .../chromium-browser_75.0.3770.90-0ubuntu0.18.04.1_amd64.deb ...
+Unpacking chromium-browser (75.0.3770.90-0ubuntu0.18.04.1) ...
+Selecting previously unselected package chromium-browser-l10n.
+Preparing to unpack .../chromium-browser-l10n_75.0.3770.90-0ubuntu0.18.04.1_all.deb ...
+Unpacking chromium-browser-l10n (75.0.3770.90-0ubuntu0.18.04.1) ...
+Selecting previously unselected package chromium-chromedriver.
+Preparing to unpack .../chromium-chromedriver_75.0.3770.90-0ubuntu0.18.04.1_amd64.deb ...
+Unpacking chromium-chromedriver (75.0.3770.90-0ubuntu0.18.04.1) ...
+Processing triggers for mime-support (3.60ubuntu1) ...
+Setting up chromium-codecs-ffmpeg-extra (75.0.3770.90-0ubuntu0.18.04.1) ...
+Processing triggers for man-db (2.8.3-2ubuntu0.1) ...
+Processing triggers for hicolor-icon-theme (0.17-2) ...
+Setting up chromium-browser (75.0.3770.90-0ubuntu0.18.04.1) ...
+update-alternatives: using /usr/bin/chromium-browser to provide /usr/bin/x-www-browser (x-www-browser) in auto mode
+update-alternatives: using /usr/bin/chromium-browser to provide /usr/bin/gnome-www-browser (gnome-www-browser) in auto mode
+Setting up chromium-chromedriver (75.0.3770.90-0ubuntu0.18.04.1) ...
+Setting up chromium-browser-l10n (75.0.3770.90-0ubuntu0.18.04.1) ...
+     |████████████████████████████████| 51kB 2.0MB/s 
+     |████████████████████████████████| 911kB 8.4MB/s 
 </pre>
 </div>
 </div>
@@ -13261,10 +13302,10 @@ Use &#39;apt autoremove&#39; to remove it.
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">doc_path</span><span class="p">):</span>
 <span class="c1">#    local_file = os.path.basename(doc_path)</span>
-    <span class="n">dest_file</span> <span class="o">=</span> <span class="n">doc_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">local_file</span> <span class="o">=</span> <span class="n">doc_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">gdrivePrefix</span> <span class="o">=</span> <span class="s1">&#39;/content/gdrive/My Drive/Colab_Downloads/&#39;</span>
-    <span class="n">dest_file</span> <span class="o">=</span> <span class="n">gdrivePrefix</span> <span class="o">+</span> <span class="n">dest_file</span>
-    <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">doc_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">r</span><span class="p">:</span>
+    <span class="n">dest_file</span> <span class="o">=</span> <span class="n">gdrivePrefix</span> <span class="o">+</span> <span class="n">local_file</span>
+    <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">doc_path</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">r</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Downladed file: &#39;</span> <span class="o">+</span> <span class="n">dest_file</span><span class="p">)</span>
@@ -13307,7 +13348,11 @@ Use &#39;apt autoremove&#39; to remove it.
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Drive already mounted at /content/gdrive; to attempt to forcibly remount, call drive.mount(&#34;/content/gdrive&#34;, force_remount=True).
+<pre>Go to this URL in a browser: https://accounts.google.com/o/oauth2/auth?client_id=947318989803-6bn6qk8qdgf4n4g3pfee6491hc0brc4i.apps.googleusercontent.com&amp;redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&amp;scope=email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdocs.test%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.photos.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fpeopleapi.readonly&amp;response_type=code
+
+Enter your authorization code:
+··········
+Mounted at /content/gdrive
 </pre>
 </div>
 </div>
@@ -13468,68 +13513,68 @@ Use &#39;apt autoremove&#39; to remove it.
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/7%20Years%20of%20DDD_%20Tackling%20Complexity%20in%20Large-Scale%20Marketing%20Systems%20Presentation.pdf
-Downladed file: 7%20Years%20of%20DDD_%20Tackling%20Complexity%20in%20Large-Scale%20Marketing%20Systems%20Presentation.pdf
+<pre>Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/7%20Years%20of%20DDD_%20Tackling%20Complexity%20in%20Large-Scale%20Marketing%20Systems%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/7%20Years%20of%20DDD_%20Tackling%20Complexity%20in%20Large-Scale%20Marketing%20Systems%20Presentation.pdf
 Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/A%20service%20mesh%20is%20easy%20to%20swallow%20in%20small%20pieces%20_sponsored%20by%20Aspen%20Mesh_%20Presentation.pdf
-Downladed file: A%20service%20mesh%20is%20easy%20to%20swallow%20in%20small%20pieces%20_sponsored%20by%20Aspen%20Mesh_%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/A%20service%20mesh%20is%20easy%20to%20swallow%20in%20small%20pieces%20_sponsored%20by%20Aspen%20Mesh_%20Presentation.pdf
 Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/An%20architect_s%20guiding%20principles%20for%20leadership%20Presentation.pdf
-Downladed file: An%20architect_s%20guiding%20principles%20for%20leadership%20Presentation.pdf
-Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Anatomy%20of%20testing%20in%20production_%20A%20Netflix%20original%20case%20study%20Presentation.pptx
-Downladed file: Anatomy%20of%20testing%20in%20production_%20A%20Netflix%20original%20case%20study%20Presentation.pptx
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Architecting%20for%20news%20recommendations_%20The%20many%20hidden%20colors%20of%20the%20Gray%20Lady%20Presentation.pdf
-Downladed file: Architecting%20for%20news%20recommendations_%20The%20many%20hidden%20colors%20of%20the%20Gray%20Lady%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/An%20architect_s%20guiding%20principles%20for%20leadership%20Presentation.pdf
+Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Anatomy%20of%20testing%20in%20production_%20A%20Netflix%20original%20case%20study%20Presentation.pptx
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Anatomy%20of%20testing%20in%20production_%20A%20Netflix%20original%20case%20study%20Presentation.pptx
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Architecting%20for%20news%20recommendations_%20The%20many%20hidden%20colors%20of%20the%20Gray%20Lady%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Architecting%20for%20news%20recommendations_%20The%20many%20hidden%20colors%20of%20the%20Gray%20Lady%20Presentation.pdf
 Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation.pptx
-Downladed file: Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation.pptx
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation%201.pdf
-Downladed file: Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation%201.pdf
-Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Automating%20stateful%20applications%20with%20Kubernetes%20Operators%20_sponsored%20by%20OpenShift_%20Presentation.zip
-Downladed file: Automating%20stateful%20applications%20with%20Kubernetes%20Operators%20_sponsored%20by%20OpenShift_%20Presentation.zip
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation.pptx
+Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation%201.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Architectural%20anti-patterns%20when%20delivering%20a%20software%20ecosystem%20with%20Kubernetes%20Presentation%201.pdf
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Automating%20stateful%20applications%20with%20Kubernetes%20Operators%20_sponsored%20by%20OpenShift_%20Presentation.zip
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Automating%20stateful%20applications%20with%20Kubernetes%20Operators%20_sponsored%20by%20OpenShift_%20Presentation.zip
 Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Beyond%20accidental%20architecture%20Presentation%203.pptx
-Downladed file: Beyond%20accidental%20architecture%20Presentation%203.pptx
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Beyond%20accidental%20architecture%20Presentation%203.pptx
 Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Building%20a%20robust%20content%20recommendation%20platform%20for%2060%20million%20news%20readers%20%20Presentation.pdf
-Downladed file: Building%20a%20robust%20content%20recommendation%20platform%20for%2060%20million%20news%20readers%20%20Presentation.pdf
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Building%20a%20service%20delivery%20infrastructure%20_sponsored%20by%20ThoughtWorks_%20Presentation.pdf
-Downladed file: Building%20a%20service%20delivery%20infrastructure%20_sponsored%20by%20ThoughtWorks_%20Presentation.pdf
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Content%20systems%20architecture_%20Approaches%20in%20a%20decoupled%20world%20Presentation%201.pdf
-Downladed file: Content%20systems%20architecture_%20Approaches%20in%20a%20decoupled%20world%20Presentation%201.pdf
-Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Continuous%20delivery%20in%20an%20ephemeral%20world%20Presentation%202.pdf
-Downladed file: Continuous%20delivery%20in%20an%20ephemeral%20world%20Presentation%202.pdf
-Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Developing%20great%20architects_%20Creating%20the%20right%20environment%20for%20growth%20Presentation.pdf
-Downladed file: Developing%20great%20architects_%20Creating%20the%20right%20environment%20for%20growth%20Presentation.pdf
-Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Distributed%20event-driven%20services_%20From%20the%20trenches%20Presentation.pdf
-Downladed file: Distributed%20event-driven%20services_%20From%20the%20trenches%20Presentation.pdf
-Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Entity%20component%20systems%20and%20you_%20They_re%20not%20just%20for%20game%20developers%20Presentation.pdf
-Downladed file: Entity%20component%20systems%20and%20you_%20They_re%20not%20just%20for%20game%20developers%20Presentation.pdf
-Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/ETL%20and%20event%20sourcing%20Presentation.pdf
-Downladed file: ETL%20and%20event%20sourcing%20Presentation.pdf
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Leadership%20skills%20for%20architects%20Presentation.pdf
-Downladed file: Leadership%20skills%20for%20architects%20Presentation.pdf
-Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/META%20for%20microservices_%20Getting%20your%20enterprise%20migration%20in%20motion%20Presentation.pdf
-Downladed file: META%20for%20microservices_%20Getting%20your%20enterprise%20migration%20in%20motion%20Presentation.pdf
-Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Microservices%20architecture%20in%20the%20real%20world%20Presentation.zip
-Downladed file: Microservices%20architecture%20in%20the%20real%20world%20Presentation.zip
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/RESTful%20web%20microservices%20from%20the%20ground%20up%20Presentation.pdf
-Downladed file: RESTful%20web%20microservices%20from%20the%20ground%20up%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Building%20a%20robust%20content%20recommendation%20platform%20for%2060%20million%20news%20readers%20%20Presentation.pdf
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Building%20a%20service%20delivery%20infrastructure%20_sponsored%20by%20ThoughtWorks_%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Building%20a%20service%20delivery%20infrastructure%20_sponsored%20by%20ThoughtWorks_%20Presentation.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Content%20systems%20architecture_%20Approaches%20in%20a%20decoupled%20world%20Presentation%201.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Content%20systems%20architecture_%20Approaches%20in%20a%20decoupled%20world%20Presentation%201.pdf
+Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Continuous%20delivery%20in%20an%20ephemeral%20world%20Presentation%202.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Continuous%20delivery%20in%20an%20ephemeral%20world%20Presentation%202.pdf
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Developing%20great%20architects_%20Creating%20the%20right%20environment%20for%20growth%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Developing%20great%20architects_%20Creating%20the%20right%20environment%20for%20growth%20Presentation.pdf
+Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Distributed%20event-driven%20services_%20From%20the%20trenches%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Distributed%20event-driven%20services_%20From%20the%20trenches%20Presentation.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Entity%20component%20systems%20and%20you_%20They_re%20not%20just%20for%20game%20developers%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Entity%20component%20systems%20and%20you_%20They_re%20not%20just%20for%20game%20developers%20Presentation.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/ETL%20and%20event%20sourcing%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/ETL%20and%20event%20sourcing%20Presentation.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Leadership%20skills%20for%20architects%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Leadership%20skills%20for%20architects%20Presentation.pdf
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/META%20for%20microservices_%20Getting%20your%20enterprise%20migration%20in%20motion%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/META%20for%20microservices_%20Getting%20your%20enterprise%20migration%20in%20motion%20Presentation.pdf
+Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Microservices%20architecture%20in%20the%20real%20world%20Presentation.zip
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Microservices%20architecture%20in%20the%20real%20world%20Presentation.zip
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/RESTful%20web%20microservices%20from%20the%20ground%20up%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/RESTful%20web%20microservices%20from%20the%20ground%20up%20Presentation.pdf
 Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Scaling%20containers%20with%20multicluster%20GKE%20and%20Istio%20Presentation.pdf
-Downladed file: Scaling%20containers%20with%20multicluster%20GKE%20and%20Istio%20Presentation.pdf
-Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Scaling%20frontend%20applications%20with%20micro-frontends%20Presentation.pdf
-Downladed file: Scaling%20frontend%20applications%20with%20micro-frontends%20Presentation.pdf
-Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Security%20principles%20for%20the%20working%20architect%20Presentation.pdf
-Downladed file: Security%20principles%20for%20the%20working%20architect%20Presentation.pdf
-Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Serverless%20cloud%20showdown_%20Orchestrating%20functions%20Presentation.pdf
-Downladed file: Serverless%20cloud%20showdown_%20Orchestrating%20functions%20Presentation.pdf
-Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Serverless%20content%20delivery%20_a_k_a_%20Livin_%20on%20the%20edge_%20Presentation.pdf
-Downladed file: Serverless%20content%20delivery%20_a_k_a_%20Livin_%20on%20the%20edge_%20Presentation.pdf
-Waiting 5 seconds to retrieve http://s3.amazonaws.com/learning-programmer.com/OReillySACon-TechDebt4.pdf
-Downladed file: OReillySACon-TechDebt4.pdf
-Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20architect_s%20blind%20spot_%20How%20to%20align%20architecture%20and%20organizational%20structure%20to%20better%20your%20products%2C%20processes%2C%20and%20people%20Presentation.zip
-Downladed file: The%20architect_s%20blind%20spot_%20How%20to%20align%20architecture%20and%20organizational%20structure%20to%20better%20your%20products%2C%20processes%2C%20and%20people%20Presentation.zip
-Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20Elements%20of%20Kubernetes_%20Foundational%20concepts%20for%20apps%20running%20on%20Kubernetes%20Presentation.pdf
-Downladed file: The%20Elements%20of%20Kubernetes_%20Foundational%20concepts%20for%20apps%20running%20on%20Kubernetes%20Presentation.pdf
-Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20Goldilocks%20zone%20of%20lightweight%20architectural%20governance%20Presentation.pdf
-Downladed file: The%20Goldilocks%20zone%20of%20lightweight%20architectural%20governance%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Scaling%20containers%20with%20multicluster%20GKE%20and%20Istio%20Presentation.pdf
+Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Scaling%20frontend%20applications%20with%20micro-frontends%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Scaling%20frontend%20applications%20with%20micro-frontends%20Presentation.pdf
+Waiting 5 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Security%20principles%20for%20the%20working%20architect%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Security%20principles%20for%20the%20working%20architect%20Presentation.pdf
+Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Serverless%20cloud%20showdown_%20Orchestrating%20functions%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Serverless%20cloud%20showdown_%20Orchestrating%20functions%20Presentation.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/Serverless%20content%20delivery%20_a_k_a_%20Livin_%20on%20the%20edge_%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/Serverless%20content%20delivery%20_a_k_a_%20Livin_%20on%20the%20edge_%20Presentation.pdf
+Waiting 4 seconds to retrieve http://s3.amazonaws.com/learning-programmer.com/OReillySACon-TechDebt4.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/OReillySACon-TechDebt4.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20architect_s%20blind%20spot_%20How%20to%20align%20architecture%20and%20organizational%20structure%20to%20better%20your%20products%2C%20processes%2C%20and%20people%20Presentation.zip
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/The%20architect_s%20blind%20spot_%20How%20to%20align%20architecture%20and%20organizational%20structure%20to%20better%20your%20products%2C%20processes%2C%20and%20people%20Presentation.zip
+Waiting 2 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20Elements%20of%20Kubernetes_%20Foundational%20concepts%20for%20apps%20running%20on%20Kubernetes%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/The%20Elements%20of%20Kubernetes_%20Foundational%20concepts%20for%20apps%20running%20on%20Kubernetes%20Presentation.pdf
+Waiting 3 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20Goldilocks%20zone%20of%20lightweight%20architectural%20governance%20Presentation.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/The%20Goldilocks%20zone%20of%20lightweight%20architectural%20governance%20Presentation.pdf
 Waiting 4 seconds to retrieve https://cdn.oreillystatic.com/en/assets/1/event/289/The%20well-rounded%20architect%20Presentation%201.pdf
-Downladed file: The%20well-rounded%20architect%20Presentation%201.pdf
+Downladed file: /content/gdrive/My Drive/Colab_Downloads/The%20well-rounded%20architect%20Presentation%201.pdf
 Finished finding all available documents on the web page!
 </pre>
 </div>
@@ -13605,7 +13650,7 @@ Finished finding all available documents on the web page!
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total time for the script: 0:02:27.351214
+<pre>Total time for the script: 0:03:52.917116
 </pre>
 </div>
 </div>
