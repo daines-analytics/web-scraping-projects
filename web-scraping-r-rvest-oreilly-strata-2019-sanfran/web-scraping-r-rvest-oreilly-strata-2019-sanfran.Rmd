@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping R code leverages the rvest package.
 
-INTRODUCTION: O'Reilly Software Architecture Conference is an annual meeting that focuses on the skills and tools practiced by software architects. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF and PPTX documents. The script will also download the documents as part of the scraping process.
+INTRODUCTION: O'Reilly Strata Data Conference is an annual meeting that takes a deep dive into emerging techniques, technologies, and best practice for data science. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF and PPTX documents. The script will also download the documents as part of the scraping process.
 
 Starting URLs: https://conferences.oreilly.com/strata/strata-ca-2019/public/schedule/proceedings
 
