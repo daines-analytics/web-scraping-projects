@@ -1,0 +1,165 @@
+---
+title: "Web Scraping of RSA Conference USA 2019 Using R"
+author: "David Lowe"
+date: "August 25, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+SUMMARY: The purpose of this project is to practice web scraping by extracting specific pieces of information from a website. The web scraping R code leverages the rvest package.
+
+INTRODUCTION: The RSA Conference is a go-to resource for exchanging ideas, learning the latest trends, and finding the solutions in the field of cybersecurity. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF and PPTX documents. The script will also download the documents as part of the scraping process.
+
+Starting URLs: https://www.rsaconference.com/events/us19/presentations?type=presentations
+
+## Loading Libraries and Packages
+
+```{r LIBRARY}
+startTimeScript <- proc.time()
+library(httr)
+library(rvest)
+library(jsonlite)
+library(stringr)
+library(odbc)
+library(RMariaDB)
+```
+
+### Setting up the control parameters and functions
+
+```{r}
+# Set up the verbose flag to print detailed messages for debugging (only TRUE will activate!)
+verbose <- FALSE
+
+# Set up the sendNotification flag to send progress emails (setting TRUE will send emails!)
+sendNotification <- FALSE
+
+# Set up the writeToDB flag to update the database table (setting TRUE will update!)
+writeToDB <- FALSE
+
+# Set up the executeDownload flag to download files (setting TRUE will download!)
+executeDownload <- TRUE
+```
+
+```{r}
+# Load the mailR only if email is required, otherwise avoid Java errors from loading mailR
+if (sendNotification) library(mailR)
+
+email_notify <- function(msg=""){
+  sender <- Sys.getenv("MAIL_SENDER")
+  receiver <- Sys.getenv("MAIL_RECEIVER")
+  gateway <- Sys.getenv("SMTP_GATEWAY")
+  smtpuser <- Sys.getenv("SMTP_USERNAME")
+  password <- Sys.getenv("SMTP_PASSWORD")
+  sbj_line <- "Notification from R Binary Classification Script"
+  send.mail(
+    from = sender,
+    to = receiver,
+    subject= sbj_line,
+    body = msg,
+    smtp = list(host.name = gateway, port = 587, user.name = smtpuser, passwd = password, ssl = TRUE),
+    authenticate = TRUE,
+    send = TRUE)
+}
+```
+
+```{r}
+# Define the function for storing the scraped records
+store <- function(blog_title, author_name, blog_date, blog_url, blog_text){
+  dbBegin(conn)
+  insertOps <- dbSendStatement(conn, "INSERT INTO rvest_user_2019 (blog_title, author_name, blog_date, blog_url, blog_text) VALUES (?, ?, ?, ?, ?)")
+  dbBind(insertOps, list(blog_title, author_name, blog_date, blog_url, blog_text))
+  cat(dbGetRowsAffected(insertOps), "row inserted into the database.\n")
+  dbCommit(conn)
+  dbClearResult(insertOps)
+}
+```
+
+```{r}
+# Define the function for downloading files
+download_file <- function(docPath){
+  # Slicing up the document path to get the final destination file name
+  doc_path_list <- str_split(docPath, "/")
+  destFile <- doc_path_list[[1]][length(doc_path_list[[1]])]
+  # Download the document from the website
+  download.file(docPath, destFile, mode = "wb")
+  cat("Downloaded file:", destFile, "\n")
+}
+```
+
+## Setting up the basic parameters for the script
+
+```{r}
+if (sendNotification) email_notify(paste("The web scraping process using R has begun!",date()))
+```
+
+```{r DB_SETUP}
+if (writeToDB) {
+  # Set up the database connection strings and environment
+  db_host <- Sys.getenv("DB_HOST")
+  db_user <- Sys.getenv("DB_USER")
+  db_pass <- Sys.getenv("DB_PASS")
+  db_name <- Sys.getenv("DB_NAME1")
+
+  # Connect to the database
+  conn <- dbConnect(RMariaDB::MariaDB(),
+                    username = db_user,
+                    password = db_pass,
+                    host = db_host,
+                    port = 3306,
+                    dbname = db_name)
+
+}
+```
+
+```{r INITIALIZE SESSION}
+# Specifying the URL of desired web page to be scrapped
+startingURL <- "https://www.rsaconference.com/events/us19/presentations?type=presentations"
+websiteURL <- "https://www.rsaconference.com"
+pageNum <- 1
+
+# Setting up the User Agent String
+uastring <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0"
+
+session <- html_session(startingURL, user_agent(uastring))
+webPage <- read_html(session)
+```
+
+## Performing the Scraping and Processing
+
+```{r ITEM EXTRACTION}
+collection <- html_nodes(webPage, "a")
+i <- 0
+
+for (item in collection) {
+  docPath <- html_attr(item, 'href')
+  docPath <- paste0(websiteURL, docPath)
+  if (endsWith(tolower(docPath), ".pdf") | endsWith(tolower(docPath), ".pptx") | endsWith(tolower(docPath), ".zip")) {
+    i <- i + 1
+    # Adding random wait time so we do not hammer the website needlessly
+    waitTime <- runif(1, min=3, max=8)
+    cat("Waiting", as.integer(waitTime), "seconds to retrieve", docPath, "\n")
+    Sys.sleep(waitTime)
+    if (executeDownload) download_file(docPath)
+  }
+}
+
+if (writeToDB) dbDisconnect(conn)
+cat("Finished finding all available documents on the web page!")
+```
+
+## Organizing Data and Producing Outputs
+
+```{r OUTPUT}
+cat("Number of blog items processed:", i, "\n")
+```
+
+```{r}
+if (sendNotification) email_notify(paste("The web scraping process has completed!",date()))
+```
+
+```{r}
+proc.time()-startTimeScript
+```
