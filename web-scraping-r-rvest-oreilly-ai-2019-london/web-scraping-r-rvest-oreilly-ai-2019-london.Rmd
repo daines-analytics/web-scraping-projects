@@ -13,7 +13,7 @@ SUMMARY: The purpose of this project is to practice web scraping by extracting s
 
 INTRODUCTION: The O’Reilly Artificial Intelligence (AI) Conference covers the full range of topics in leveraging the AI technologies for developing software applications and creating innovative solutions. This web scraping script will automatically traverse through the entire web page and collect all links to the PDF and PPTX documents. The script will also download the documents as part of the scraping process.
 
-Starting URLs: https://conferences.oreilly.com/strata/strata-ny/public/schedule/proceedings
+Starting URLs: https://conferences.oreilly.com/artificial-intelligence/ai-eu/public/schedule/proceedings
 
 ## Loading Libraries and Packages
 
