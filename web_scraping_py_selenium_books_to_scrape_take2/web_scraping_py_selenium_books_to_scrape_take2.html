@@ -13223,52 +13223,6 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># To scrape the detail information of each individual book</span>
-<span class="k">def</span> <span class="nf">capture_details</span><span class="p">(</span><span class="n">item_page_url</span><span class="p">):</span>
-    <span class="c1"># Initialize the web browser</span>
-    <span class="n">second_browser_options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
-    <span class="n">second_browser_options</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">detail_page_browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">second_browser_options</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Attempting to access the web page:&#39;</span><span class="p">,</span> <span class="n">item_page_url</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">detail_page_browser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item_page_url</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Successfully accessed the web page:&#39;</span><span class="p">,</span> <span class="n">item_page_url</span><span class="p">)</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The server could not serve up the web page!&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Script processing cannot continue!!!&#39;</span><span class="p">)</span>
-
-    <span class="n">product_container</span> <span class="o">=</span> <span class="n">detail_page_browser</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;product_page&quot;</span><span class="p">)</span>
-    <span class="n">item_image</span> <span class="o">=</span> <span class="n">product_container</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">)</span>
-    <span class="n">item_description</span> <span class="o">=</span> <span class="n">product_container</span><span class="o">.</span><span class="n">find_elements</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
-    <span class="n">table_rows</span> <span class="o">=</span> <span class="n">product_container</span><span class="o">.</span><span class="n">find_elements</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;tr&quot;</span><span class="p">)</span>
-    <span class="n">item_upc</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-    <span class="n">item_type</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-    <span class="n">item_tax_text</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">item_tax</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9\.]+&quot;</span><span class="p">,</span> <span class="n">item_tax_text</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">item_tax</span> <span class="o">=</span> <span class="mf">0.00</span>
-    <span class="n">item_reviews</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">table_rows</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-    <span class="n">item_quantity_text</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">item_quantity</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">item_quantity_text</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">item_quantity</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="n">detail_page_browser</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">item_upc</span><span class="p">,</span> <span class="n">item_type</span><span class="p">,</span> <span class="n">item_tax</span><span class="p">,</span> <span class="n">item_quantity</span><span class="p">,</span> <span class="n">item_reviews</span><span class="p">,</span> <span class="n">item_image</span><span class="p">,</span> <span class="n">item_description</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Setting up a dataframe to capture the records</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;book_title&#39;</span><span class="p">,</span> <span class="s1">&#39;detail_url&#39;</span><span class="p">,</span> <span class="s1">&#39;thumnail_url&#39;</span><span class="p">,</span> <span class="s1">&#39;book_price&#39;</span><span class="p">,</span> <span class="s1">&#39;inventory_status&#39;</span><span class="p">,</span> <span class="s1">&#39;upc_code&#39;</span><span class="p">,</span> <span class="s1">&#39;product_type&#39;</span><span class="p">,</span> <span class="s1">&#39;required_tax&#39;</span><span class="p">,</span> <span class="s1">&#39;stock_quantity&#39;</span><span class="p">,</span> <span class="s1">&#39;number_reviews&#39;</span><span class="p">,</span> <span class="s1">&#39;image_url&#39;</span><span class="p">,</span> <span class="s1">&#39;product_description&#39;</span><span class="p">])</span>
 <span class="n">num_entries</span> <span class="o">=</span> <span class="mi">0</span>
@@ -13281,12 +13235,28 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Specifying the URL of desired web page to be scrapped</span>
 <span class="n">website_url</span> <span class="o">=</span> <span class="s2">&quot;http://books.toscrape.com&quot;</span>
-<span class="n">web_page_url</span> <span class="o">=</span> <span class="n">website_url</span> <span class="o">+</span> <span class="s2">&quot;/index.html&quot;</span>
+<span class="n">web_page_url</span> <span class="o">=</span> <span class="n">website_url</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Initialize the web browser</span>
+<span class="n">firefox_options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
+<span class="n">firefox_options</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">home_page_browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">firefox_options</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13299,32 +13269,16 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Initialize the web browser</span>
-<span class="n">firefox_options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
-<span class="n">firefox_options</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">home_page_browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">firefox_options</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">current_page</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">max_pages</span> <span class="o">=</span> <span class="mi">999</span>
 <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">while</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">&lt;=</span> <span class="n">max_pages</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">done</span><span class="p">):</span>
     <span class="c1"># Adding random wait time so we do not hammer the website needlessly</span>
-    <span class="n">waitTime</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">waitTime</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Waiting&quot;</span><span class="p">,</span> <span class="n">waitTime</span><span class="p">,</span> <span class="s2">&quot;seconds to retrieve the items on page&quot;</span><span class="p">,</span> <span class="n">web_page_url</span><span class="p">)</span>
     <span class="n">sleep</span><span class="p">(</span><span class="n">waitTime</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Attempting to access the web page:&#39;</span><span class="p">,</span> <span class="n">web_page_url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Attempting to access the web page:&#39;</span><span class="p">,</span> <span class="n">web_page_url</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">home_page_browser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">web_page_url</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Successfully accessed the web page:&#39;</span><span class="p">,</span> <span class="n">web_page_url</span><span class="p">)</span>
@@ -13334,7 +13288,12 @@ div#notebook {
 
     <span class="n">book_section</span> <span class="o">=</span> <span class="n">home_page_browser</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;ol&quot;</span><span class="p">)</span>
     <span class="n">book_listing</span> <span class="o">=</span> <span class="n">book_section</span><span class="o">.</span><span class="n">find_elements</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;li&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">book_listing</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">book_listing</span><span class="p">)</span>
+
+    <span class="c1"># Initialize browser for the detail pages</span>
+    <span class="n">second_browser_options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
+    <span class="n">second_browser_options</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">book_page_browser</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">second_browser_options</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">book_item</span> <span class="ow">in</span> <span class="n">book_listing</span><span class="p">:</span>
         <span class="n">thumnail_container</span> <span class="o">=</span> <span class="n">book_item</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;image_container&quot;</span><span class="p">)</span>
@@ -13348,10 +13307,38 @@ div#notebook {
             <span class="n">book_price</span> <span class="o">=</span> <span class="mf">0.00</span>
         <span class="n">inventory_status</span> <span class="o">=</span> <span class="n">book_item</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;availability&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="n">upc_code</span><span class="p">,</span> <span class="n">product_type</span><span class="p">,</span> <span class="n">required_tax</span><span class="p">,</span> <span class="n">stock_quantity</span><span class="p">,</span> <span class="n">number_reviews</span><span class="p">,</span> <span class="n">image_url</span><span class="p">,</span> <span class="n">product_description</span> <span class="o">=</span> <span class="n">capture_details</span><span class="p">(</span><span class="n">detail_url</span><span class="p">)</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Attempting to access the web page:&#39;</span><span class="p">,</span> <span class="n">detail_url</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">book_page_browser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">detail_url</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Successfully accessed the web page:&#39;</span><span class="p">,</span> <span class="n">detail_url</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The server could not serve up the web page!&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Script processing cannot continue!!!&#39;</span><span class="p">)</span>
+
+        <span class="n">product_container</span> <span class="o">=</span> <span class="n">book_page_browser</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;product_page&quot;</span><span class="p">)</span>
+        <span class="n">image_url</span> <span class="o">=</span> <span class="n">product_container</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">)</span>
+        <span class="n">product_description</span> <span class="o">=</span> <span class="n">product_container</span><span class="o">.</span><span class="n">find_elements</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">table_rows</span> <span class="o">=</span> <span class="n">product_container</span><span class="o">.</span><span class="n">find_elements</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;tr&quot;</span><span class="p">)</span>
+        <span class="n">upc_code</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">product_type</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">item_tax_text</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">required_tax</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9\.]+&quot;</span><span class="p">,</span> <span class="n">item_tax_text</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">required_tax</span> <span class="o">=</span> <span class="mf">0.00</span>
+        <span class="n">number_reviews</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">table_rows</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">item_quantity_text</span> <span class="o">=</span> <span class="n">table_rows</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stock_quantity</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">item_quantity_text</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">stock_quantity</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">num_entries</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">book_title</span><span class="p">,</span> <span class="n">detail_url</span><span class="p">,</span> <span class="n">thumnail_url</span><span class="p">,</span> <span class="n">book_price</span><span class="p">,</span> <span class="n">inventory_status</span><span class="p">,</span> <span class="n">upc_code</span><span class="p">,</span> <span class="n">product_type</span><span class="p">,</span> <span class="n">required_tax</span><span class="p">,</span> <span class="n">stock_quantity</span><span class="p">,</span> <span class="n">number_reviews</span><span class="p">,</span> <span class="n">image_url</span><span class="p">,</span> <span class="n">product_description</span><span class="p">]</span>
         <span class="n">num_entries</span> <span class="o">=</span> <span class="n">num_entries</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Close browser for the detail pages</span>
+    <span class="n">book_page_browser</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">next_button_element</span> <span class="o">=</span> <span class="n">home_page_browser</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">)</span>
@@ -13375,9 +13362,8 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/index.html
-Attempting to access the web page: http://books.toscrape.com/index.html
-Successfully accessed the web page: http://books.toscrape.com/index.html
+<pre>Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/
+Successfully accessed the web page: http://books.toscrape.com/
 Successfully accessed the web page: http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/soumission_998/index.html
@@ -13398,8 +13384,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/olio_984
 Successfully accessed the web page: http://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/libertarianism-for-beginners_982/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-2.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-2.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-2.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-2.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/in-her-wake_980/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/how-music-works_979/index.html
@@ -13421,8 +13406,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/maude-18
 Successfully accessed the web page: http://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/behind-closed-doors_962/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/you-cant-bury-them-all-poems_961/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-3.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-3.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-3.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-3.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/slow-states-of-collapse-poems_960/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/reasons-to-stay-alive_959/index.html
@@ -13444,8 +13428,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-secr
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-pioneer-woman-cooks-dinnertime-comfort-classics-freezer-food-16-minute-meals-and-other-delicious-ways-to-solve-supper_943/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-past-never-ends_942/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-natural-history-of-us-the-fine-art-of-pretending-2_941/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-4.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-4.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-4.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-4.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-nameless-city-the-nameless-city-1_940/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-murder-that-never-was-forensic-instincts-5_939/index.html
@@ -13467,8 +13450,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/saga-vol
 Successfully accessed the web page: http://books.toscrape.com/catalogue/saga-volume-5-saga-collected-editions-5_923/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/reskilling-america-learning-to-labor-in-the-twenty-first-century_922/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/rat-queens-vol-3-demons-rat-queens-collected-editions-11-15_921/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-5.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-5.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-5.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-5.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/princess-jellyfish-2-in-1-omnibus-vol-01-princess-jellyfish-2-in-1-omnibus-1_920/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/princess-between-worlds-wide-awake-princess-5_919/index.html
@@ -13490,8 +13472,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/layered-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/judo-seven-steps-to-black-belt-an-introductory-guide-for-beginners_903/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/join_902/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/in-the-country-we-love-my-family-divided_901/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-6.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-6.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-6.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-6.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/immunity-how-elie-metchnikoff-changed-the-course-of-modern-medicine_900/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/i-hate-fairyland-vol-1-madly-ever-after-i-hate-fairyland-compilations-1-5_899/index.html
@@ -13513,8 +13494,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/burning_
 Successfully accessed the web page: http://books.toscrape.com/catalogue/bossypants_883/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/bitch-planet-vol-1-extraordinary-machine-bitch-planet-collected-editions_882/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/avatar-the-last-airbender-smoke-and-shadow-part-3-smoke-and-shadow-3_881/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-7.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-7.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-7.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-7.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/algorithms-to-live-by-the-computer-science-of-human-decisions_880/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/a-world-of-flavor-your-gluten-free-passport_879/index.html
@@ -13537,7 +13517,6 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-vaca
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-third-wave-an-entrepreneurs-vision-of-the-future_862/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-stranger_861/index.html
 Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-8.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-8.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-8.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-shadow-hero-the-shadow-hero_860/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-secret-the-secret-1_859/index.html
@@ -13559,8 +13538,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-girl
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-genius-of-birds_843/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-emerald-mystery_842/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-cookies-cups-cookbook-125-sweet-savory-recipes-reminding-you-to-always-eat-dessert-first_841/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-9.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-9.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-9.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-9.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-bridge-to-consciousness-im-writing-the-bridge-between-science-and-our-old-and-new-beliefs_840/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-artists-way-a-spiritual-path-to-higher-creativity_839/index.html
@@ -13582,8 +13560,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/poems-th
 Successfully accessed the web page: http://books.toscrape.com/catalogue/nightingale-sing_823/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/night-sky-with-exit-wounds_822/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/mrs-houdini_821/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-10.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-10.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-10.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-10.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/modern-romance_820/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/miss-peregrines-home-for-peculiar-children-miss-peregrines-peculiar-children-1_819/index.html
@@ -13605,8 +13582,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/drive-th
 Successfully accessed the web page: http://books.toscrape.com/catalogue/done-rubbed-out-reightman-bailey-1_803/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/doing-it-over-most-likely-to-1_802/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/deliciously-ella-every-day-quick-and-easy-recipes-for-gluten-free-snacks-packed-lunches-and-simple-meals_801/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-11.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-11.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-11.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-11.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/dark-notes_800/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/daring-greatly-how-the-courage-to-be-vulnerable-transforms-the-way-we-live-love-parent-and-lead_799/index.html
@@ -13628,8 +13604,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/you-you-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/wonder-woman-earth-one-volume-one-wonder-woman-earth-one-1_783/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/wild-swans_782/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/why-the-right-went-wrong-conservatism-from-goldwater-to-the-tea-party-and-beyond_781/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-12.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-12.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-12.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-12.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/whole-lotta-creativity-going-on-60-fun-and-unusual-exercises-to-awaken-and-strengthen-your-creativity_780/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/whats-it-like-in-space-stories-from-astronauts-whove-been-there_779/index.html
@@ -13651,8 +13626,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-star
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-songs-of-the-gods_763/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-song-of-achilles_762/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-rosie-project-don-tillman-1_761/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-13.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-13.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-13.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-13.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-power-of-habit-why-we-do-what-we-do-in-life-and-business_760/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-marriage-of-opposites_759/index.html
@@ -13674,8 +13648,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-14th
 Successfully accessed the web page: http://books.toscrape.com/catalogue/that-darkness-gardiner-and-renner-1_743/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/tastes-like-fear-di-marnie-rome-3_742/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/take-me-with-you_741/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-14.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-14.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-14.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-14.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/swell-a-year-of-waves_740/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/superman-vol-1-before-truth-superman-by-gene-luen-yang-1_739/index.html
@@ -13697,8 +13670,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/once-was
 Successfully accessed the web page: http://books.toscrape.com/catalogue/old-school-diary-of-a-wimpy-kid-10_723/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/no-dream-is-too-high-life-lessons-from-a-man-who-walked-on-the-moon_722/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/naruto-3-in-1-edition-vol-14-includes-vols-40-41-42-naruto-omnibus-14_721/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-15.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-15.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-15.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-15.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/my-name-is-lucy-barton_720/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/my-mrs-brown_719/index.html
@@ -13720,8 +13692,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/i-know-w
 Successfully accessed the web page: http://books.toscrape.com/catalogue/i-am-pilgrim-pilgrim-1_703/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/hyperbole-and-a-half-unfortunate-situations-flawed-coping-mechanisms-mayhem-and-other-things-that-happened_702/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/hush-hush-hush-hush-1_701/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-16.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-16.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-16.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-16.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/hold-your-breath-search-and-rescue-1_700/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/hamilton-the-revolution_699/index.html
@@ -13743,8 +13714,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/dear-mr-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/daily-fantasy-sports_683/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/crazy-love-overwhelmed-by-a-relentless-god_682/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/cometh-the-hour-the-clifton-chronicles-6_681/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-17.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-17.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-17.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-17.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/code-name-verity-code-name-verity-1_680/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/clockwork-angel-the-infernal-devices-1_679/index.html
@@ -13766,8 +13736,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/art-ops-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/aristotle-and-dante-discover-the-secrets-of-the-universe-aristotle-and-dante-discover-the-secrets-of-the-universe-1_663/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/angels-walking-angels-walking-1_662/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/angels-demons-robert-langdon-1_661/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-18.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-18.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-18.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-18.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/all-the-light-we-cannot-see_660/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/adulthood-is-a-myth-a-sarahs-scribbles-collection_659/index.html
@@ -13789,8 +13758,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/will-you
 Successfully accessed the web page: http://books.toscrape.com/catalogue/tipping-point-for-planet-earth-how-close-are-we-to-the-edge_643/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-star-touched-queen_642/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-silent-sister-riley-macpherson-1_641/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-19.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-19.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-19.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-19.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-midnight-watch-a-novel-of-the-titanic-and-the-californian_640/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-lonely-city-adventures-in-the-art-of-being-alone_639/index.html
@@ -13813,7 +13781,6 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/most-wan
 Successfully accessed the web page: http://books.toscrape.com/catalogue/love-lies-and-spies_622/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/how-to-speak-golf-an-illustrated-guide-to-links-lingo_621/index.html
 Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-20.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-20.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-20.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/hide-away-eve-duncan-20_620/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/furiously-happy-a-funny-book-about-horrible-things_619/index.html
@@ -13835,8 +13802,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/sleeping
 Successfully accessed the web page: http://books.toscrape.com/catalogue/setting-the-world-on-fire-the-brief-astonishing-life-of-st-catherine-of-siena_603/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/playing-with-fire_602/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/off-the-hook-fishing-for-trouble-1_601/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-21.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-21.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-21.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-21.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/mothering-sunday_600/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/mother-can-you-not_599/index.html
@@ -13858,8 +13824,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/a-gentle
 Successfully accessed the web page: http://books.toscrape.com/catalogue/112263_583/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/10-happier-how-i-tamed-the-voice-in-my-head-reduced-stress-without-losing-my-edge-and-found-self-help-that-actually-works_582/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/10-day-green-smoothie-cleanse-lose-up-to-15-pounds-in-10-days_581/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-22.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-22.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-22.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-22.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/without-shame_580/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/watchmen_579/index.html
@@ -13881,8 +13846,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/if-i-gav
 Successfully accessed the web page: http://books.toscrape.com/catalogue/fruits-basket-vol-9-fruits-basket-9_563/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/dress-your-family-in-corduroy-and-denim_562/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/dont-forget-steven_561/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-23.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-23.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-23.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-23.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/chernobyl-012340-the-incredible-true-story-of-the-worlds-worst-nuclear-disaster_560/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/art-and-fear-observations-on-the-perils-and-rewards-of-artmaking_559/index.html
@@ -13904,8 +13868,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/south-of
 Successfully accessed the web page: http://books.toscrape.com/catalogue/smarter-faster-better-the-secrets-of-being-productive-in-life-and-business_543/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/silence-in-the-dark-logan-point-4_542/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/shadows-of-the-past-logan-point-1_541/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-24.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-24.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-24.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-24.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/roller-girl_540/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/rising-strong_539/index.html
@@ -13927,8 +13890,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/i-will-f
 Successfully accessed the web page: http://books.toscrape.com/catalogue/hystopia-a-novel_523/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/howl-and-other-poems_522/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/history-of-beauty_521/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-25.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-25.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-25.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-25.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/heaven-is-for-real-a-little-boys-astounding-story-of-his-trip-to-heaven-and-back_520/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/future-shock-future-shock-1_519/index.html
@@ -13950,8 +13912,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/under-th
 Successfully accessed the web page: http://books.toscrape.com/catalogue/toddlers-are-aholes-its-not-your-fault_503/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-year-of-living-biblically-one-mans-humble-quest-to-follow-the-bible-as-literally-as-possible_502/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-whale_501/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-26.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-26.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-26.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-26.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-story-of-art_500/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-origin-of-species_499/index.html
@@ -13973,8 +13934,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/shrunken
 Successfully accessed the web page: http://books.toscrape.com/catalogue/rich-dad-poor-dad_483/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/raymie-nightingale_482/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/playing-from-the-heart_481/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-27.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-27.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-27.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-27.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/nightstruck-a-novel_480/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/naturally-lean-125-nourishing-gluten-free-plant-based-recipes-all-under-300-calories_479/index.html
@@ -13997,7 +13957,6 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/counted-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/chronicles-vol-1_462/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/blue-like-jazz-nonreligious-thoughts-on-christian-spirituality_461/index.html
 Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-28.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-28.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-28.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/benjamin-franklin-an-american-life_460/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/at-the-existentialist-cafe-freedom-being-and-apricot-cocktails-with-jean-paul-sartre-simone-de-beauvoir-albert-camus-martin-heidegger-edmund-husserl-karl-jaspers-maurice-merleau-ponty-and-others_459/index.html
@@ -14019,8 +13978,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-god-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-girl-you-left-behind-the-girl-you-left-behind-1_443/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-fellowship-of-the-ring-the-lord-of-the-rings-1_442/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-collected-poems-of-wb-yeats-the-collected-works-of-wb-yeats-1_441/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-29.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-29.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-29.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-29.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-barefoot-contessa-cookbook_440/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/tell-the-wolves-im-home_439/index.html
@@ -14042,8 +14000,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/catherin
 Successfully accessed the web page: http://books.toscrape.com/catalogue/better-homes-and-gardens-new-cook-book_423/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/an-unquiet-mind-a-memoir-of-moods-and-madness_422/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/a-year-in-provence-provence-1_421/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-30.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-30.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-30.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-30.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/world-without-end-the-pillars-of-the-earth-2_420/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/will-grayson-will-grayson-will-grayson-will-grayson_419/index.html
@@ -14065,8 +14022,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-firm
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-fault-in-our-stars_403/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-false-prince-the-ascendance-trilogy-1_402/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-expatriates_401/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-31.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-31.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-31.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-31.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-dream-thieves-the-raven-cycle-2_400/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-darkest-corners_399/index.html
@@ -14088,8 +14044,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/logan-ka
 Successfully accessed the web page: http://books.toscrape.com/catalogue/last-one-home-new-beginnings-1_383/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/killing-floor-jack-reacher-1_382/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/kill-the-boy-band_381/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-32.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-32.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-32.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-32.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/isla-and-the-happily-ever-after-anna-and-the-french-kiss-3_380/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/if-i-stay-if-i-stay-1_379/index.html
@@ -14111,8 +14066,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/blue-lil
 Successfully accessed the web page: http://books.toscrape.com/catalogue/approval-junkie-adventures-in-caring-too-much_363/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/an-abundance-of-katherines_362/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/americas-war-for-the-greater-middle-east-a-military-history_361/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-33.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-33.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-33.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-33.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/alight-the-generations-trilogy-2_360/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/a-girls-guide-to-moving-on-new-beginnings-2_359/index.html
@@ -14134,8 +14088,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-demo
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-bone-hunters-lexy-vaughan-steven-macaulay-2_343/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-beast-black-dagger-brotherhood-14_342/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/some-women_341/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-34.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-34.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-34.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-34.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/shopaholic-ties-the-knot-shopaholic-3_340/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/paper-and-fire-the-great-library-2_339/index.html
@@ -14157,8 +14110,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/gone-wit
 Successfully accessed the web page: http://books.toscrape.com/catalogue/god-is-not-great-how-religion-poisons-everything_323/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/girl-with-a-pearl-earring_322/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/fruits-basket-vol-4-fruits-basket-4_321/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-35.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-35.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-35.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-35.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/far-from-true-promise-falls-trilogy-2_320/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/dark-lover-black-dagger-brotherhood-1_319/index.html
@@ -14180,8 +14132,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/whered-y
 Successfully accessed the web page: http://books.toscrape.com/catalogue/when-you-are-engulfed-in-flames_303/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/we-the-people-the-modern-day-figures-who-have-reshaped-and-affirmed-the-founding-fathers-vision-of-america_302/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/we-are-all-completely-beside-ourselves_301/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-36.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-36.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-36.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-36.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/walk-the-edge-thunder-road-2_300/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/voyager-outlander-3_299/index.html
@@ -14203,8 +14154,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-tipp
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-thing-about-jellyfish_283/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-stand_282/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-smitten-kitchen-cookbook_281/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-37.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-37.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-37.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-37.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-silkworm-cormoran-strike-2_280/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-sandman-vol-3-dream-country-the-sandman-volumes-3_279/index.html
@@ -14226,8 +14176,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-name
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-maze-runner-the-maze-runner-1_263/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-lovers-dictionary_262/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-lonely-ones_261/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-38.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-38.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-38.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-38.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-lean-startup-how-todays-entrepreneurs-use-continuous-innovation-to-create-radically-successful-businesses_260/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-last-painting-of-sara-de-vos_259/index.html
@@ -14249,8 +14198,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-disa
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-devil-wears-prada-the-devil-wears-prada-1_243/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-demon-haunted-world-science-as-a-candle-in-the-dark_242/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-day-the-crayons-came-home-crayons_241/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-39.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-39.html
+Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-39.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-39.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-da-vinci-code-robert-langdon-2_240/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-cuckoos-calling-cormoran-strike-1_239/index.html
@@ -14273,7 +14221,6 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/somethin
 Successfully accessed the web page: http://books.toscrape.com/catalogue/soldier-talon-3_222/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/shopaholic-baby-shopaholic-5_221/index.html
 Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-40.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-40.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-40.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/seven-days-in-the-art-world_220/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/seven-brief-lessons-on-physics_219/index.html
@@ -14295,8 +14242,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/outliers
 Successfully accessed the web page: http://books.toscrape.com/catalogue/original-fake_203/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/orange-is-the-new-black_202/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/one-for-the-money-stephanie-plum-1_201/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-41.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-41.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-41.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-41.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/notes-from-a-small-island-notes-from-a-small-island-1_200/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/night-the-night-trilogy-1_199/index.html
@@ -14318,8 +14264,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/legend-l
 Successfully accessed the web page: http://books.toscrape.com/catalogue/lean-in-women-work-and-the-will-to-lead_183/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/lamb-the-gospel-according-to-biff-christs-childhood-pal_182/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/lady-renegades-rebel-belle-3_181/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-42.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-42.html
+Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-42.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-42.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/jurassic-park-jurassic-park-1_180/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/its-never-too-late-to-begin-again-discovering-creativity-and-meaning-at-midlife-and-beyond_179/index.html
@@ -14342,7 +14287,6 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/gratitud
 Successfully accessed the web page: http://books.toscrape.com/catalogue/gone-girl_162/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/golden-heart-of-dread-3_161/index.html
 Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-43.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-43.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-43.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/girl-in-the-blue-coat_160/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/fruits-basket-vol-3-fruits-basket-3_159/index.html
@@ -14364,8 +14308,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/dark-pla
 Successfully accessed the web page: http://books.toscrape.com/catalogue/crazy-rich-asians-crazy-rich-asians-1_143/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/counting-thyme_142/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/cosmos_141/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-44.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-44.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-44.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-44.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/civilization-and-its-discontents_140/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/cinder-the-lunar-chronicles-1_139/index.html
@@ -14387,8 +14330,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/awkward_
 Successfully accessed the web page: http://books.toscrape.com/catalogue/ash_123/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/are-we-there-yet_122/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/are-we-smart-enough-to-know-how-smart-animals-are_121/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-45.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-45.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-45.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-45.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/annie-on-my-mind_120/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/and-then-there-were-none_119/index.html
@@ -14410,8 +14352,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/life_104
 Successfully accessed the web page: http://books.toscrape.com/catalogue/kindle-paperwhite-users-guide_103/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/h-is-for-hawk_102/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/girl-online-on-tour-girl-online-2_101/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-46.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-46.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-46.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-46.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/fruits-basket-vol-2-fruits-basket-2_100/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/diary-of-a-minecraft-zombie-book-1-a-scare-of-a-dare-an-unofficial-minecraft-book_99/index.html
@@ -14433,8 +14374,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-stor
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-silent-wife_83/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-silent-twin-detective-jennifer-knight-3_82/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-selfish-gene_81/index.html
-Waiting 4 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-47.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-47.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-47.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-47.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-secret-healer_80/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-sandman-vol-1-preludes-and-nocturnes-the-sandman-volumes-1_79/index.html
@@ -14456,8 +14396,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/the-end-
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-edge-of-reason-bridget-jones-2_63/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-complete-maus-maus-1-2_62/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-communist-manifesto_61/index.html
-Waiting 3 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-48.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-48.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-48.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-48.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-bhagavad-gita_60/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/the-bette-davis-club_59/index.html
@@ -14479,8 +14418,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/paper-gi
 Successfully accessed the web page: http://books.toscrape.com/catalogue/ouran-high-school-host-club-vol-1-ouran-high-school-host-club-1_43/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/origins-alphas-05_42/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/one-second-seven-7_41/index.html
-Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-49.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-49.html
+Waiting 1 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-49.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-49.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/on-the-road-duluoz-legend_40/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/old-records-never-die-one-mans-quest-for-his-vinyl-and-his-past_39/index.html
@@ -14503,7 +14441,6 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/having-t
 Successfully accessed the web page: http://books.toscrape.com/catalogue/giant-days-vol-1-giant-days-1-4_22/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/fruits-basket-vol-1-fruits-basket-1_21/index.html
 Waiting 2 seconds to retrieve the items on page http://books.toscrape.com/catalogue/page-50.html
-Attempting to access the web page: http://books.toscrape.com/catalogue/page-50.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/page-50.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/frankenstein_20/index.html
 Successfully accessed the web page: http://books.toscrape.com/catalogue/forever-rockers-the-rocker-12_19/index.html
@@ -14529,6 +14466,19 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/1000-pla
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">book_page_browser</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
 
@@ -14867,12 +14817,12 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/1000-pla
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">writeOutput</span><span class="p">):</span>
     <span class="n">out_file</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;web_scraping_py_selenium_books_to_scrape_take2.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;web_scraping_py_selenium_books_to_scrape_take2.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of records written to file:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
 </pre></div>
@@ -14881,10 +14831,28 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/1000-pla
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Number of records written to file: 1000
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">notifyStatus</span><span class="p">):</span> <span class="n">status_notify</span><span class="p">(</span><span class="s2">&quot;Task 3 Finalize the Output completed! &quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%a</span><span class="s1"> %B </span><span class="si">%d</span><span class="s1">, %Y %I:%M:%S %p&#39;</span><span class="p">))</span>
@@ -14897,7 +14865,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/1000-pla
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Total time for the script:&#39;</span><span class="p">,(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">startTimeScript</span><span class="p">))</span>
@@ -14917,7 +14885,7 @@ Successfully accessed the web page: http://books.toscrape.com/catalogue/1000-pla
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total time for the script: 2:28:32.287031
+<pre>Total time for the script: 0:53:01.319951
 </pre>
 </div>
 </div>
